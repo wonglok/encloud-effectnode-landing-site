@@ -25,9 +25,9 @@ export const effect = async (node) => {
     side: DoubleSide,
   });
 
-  node.pickers.appSettings.color1.stream((value) => {
-    mat.color.setStyle(value); //.offsetHSL(0.1, 0, 0);
-  });
+  // node.pickers.appSettings.color1.stream((value) => {
+  //   mat.color.setStyle(value); //.offsetHSL(0.1, 0, 0);
+  // });
 
   let geo = new PlaneBufferGeometry(3, 3);
   geo.rotateX(-Math.PI * 0.35);
