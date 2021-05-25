@@ -355,8 +355,8 @@ export class LambdaClient extends EventEmitter {
 
 export const ProviderCache = new Map();
 
-export const provideURL = (Loader, url) =>
-  new Promise((resolve) => {
+export const provideURL = (Loader, url) => {
+  return new Promise((resolve) => {
     if (ProviderCache.has(url)) {
       resolve(ProviderCache.get(url));
       return;
@@ -366,6 +366,7 @@ export const provideURL = (Loader, url) =>
       resolve(v);
     });
   });
+};
 
 export const easyEvent = (node, event, fnc) => {
   window.addEventListener(event, fnc);
