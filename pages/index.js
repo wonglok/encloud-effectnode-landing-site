@@ -89,6 +89,9 @@ export default function Home({ buildTimeCache }) {
 
       <Canvas>
         {/*  */}
+        <OrbitControls></OrbitControls>
+
+        {/*  */}
         <EffectNode
           projectJSON={buildTimeCache || getProjectJSON()}
         ></EffectNode>
@@ -96,11 +99,11 @@ export default function Home({ buildTimeCache }) {
         {/*  */}
         <directionalLight
           position={[10, 10, 10]}
-          intensity={0.1}
+          intensity={0.25}
         ></directionalLight>
 
         {/*  */}
-        <ambientLight intensity={0.1}></ambientLight>
+        <ambientLight intensity={0.25}></ambientLight>
 
         {/*  */}
         <EnvMap></EnvMap>
@@ -118,8 +121,6 @@ export default function Home({ buildTimeCache }) {
             roughness={0.1}
           ></meshStandardMaterial>
         </Box> */}
-
-        <OrbitControls></OrbitControls>
       </Canvas>
     </div>
   );

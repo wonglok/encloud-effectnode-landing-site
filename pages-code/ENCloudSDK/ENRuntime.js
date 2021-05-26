@@ -95,7 +95,13 @@ export class ENRuntime {
       window.removeEventListener("project-arrive", handleArrival);
     });
 
-    let handleSwap = () => {
+    this.mini.onClean(() => {
+      runtimes.forEach(({ mini }) => {
+        mini.clean();
+      });
+    });
+
+    let remakeGraph = () => {
       runtimes.forEach(({ mini }) => {
         mini.clean();
       });
@@ -121,9 +127,9 @@ export class ENRuntime {
       // }, 1000);
     };
 
-    window.addEventListener("remake-graph", handleSwap, false);
+    window.addEventListener("remake-graph", remakeGraph, false);
     this.mini.onClean(() => {
-      window.removeEventListener("remake-graph", handleSwap);
+      window.removeEventListener("remake-graph", remakeGraph);
     });
 
     let makePicker = (moduleTitle) => {

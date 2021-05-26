@@ -18,10 +18,6 @@ export const enableBloom = (item) => {
   item.layers.enable(BLOOM_SCENE);
 };
 
-/*
-
-*/
-
 export default function Bloom() {
   // let tool = useTools();
   let { gl, size, scene, camera } = useThree();
@@ -98,16 +94,11 @@ export default function Bloom() {
           },
         },
         vertexShader: /* glsl */ `
-        varying vec2 vUv;
-
+          varying vec2 vUv;
           void main() {
-
             vUv = uv;
-
             gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
           }
-
         `,
         fragmentShader: /* glsl */ `
           uniform sampler2D baseTexture;
@@ -116,9 +107,7 @@ export default function Bloom() {
           varying vec2 vUv;
 
           void main() {
-
             gl_FragColor = ( texture2D( baseTexture, vUv ) * 1.0 + 1.0 * texture2D( bloomTexture, vUv ) );
-
           }
         `,
         defines: {},
@@ -155,7 +144,10 @@ export default function Bloom() {
   }, []);
 
   // let materials = {};
-  const darkMaterial = new MeshBasicMaterial({ color: "black" });
+  const darkMaterial = new MeshBasicMaterial({
+    color: "black",
+    skinning: true,
+  });
 
   const bloomLayer = new Layers();
   bloomLayer.set(BLOOM_SCENE);
@@ -181,11 +173,17 @@ export default function Bloom() {
   }
 
   let run = (dt) => {
+    let origBG = scene.background;
+
     //
+    gl.shadowMap.enabled = false;
+    scene.background = null;
     scene.traverse(darkenNonBloomed);
     bloomComposer.render(dt);
-    scene.traverse(restoreMaterial);
     //
+    gl.shadowMap.enabled = true;
+    scene.background = origBG;
+    scene.traverse(restoreMaterial);
     finalComposer.render(dt);
   };
 

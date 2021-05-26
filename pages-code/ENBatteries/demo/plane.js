@@ -6,8 +6,9 @@ import {
   MeshStandardMaterial,
   PlaneBufferGeometry,
 } from "three";
+import { FolderName } from ".";
 
-export const title = "plane";
+export const title = `${FolderName}.plane`;
 
 export const effect = async (node) => {
   let scene = await node.ready.scene;
@@ -30,7 +31,7 @@ export const effect = async (node) => {
   // });
 
   let geo = new PlaneBufferGeometry(3, 3);
-  geo.rotateX(-Math.PI * 0.35);
+  geo.rotateX(-Math.PI * 0.0);
 
   let mesh = new Mesh(geo, mat);
 

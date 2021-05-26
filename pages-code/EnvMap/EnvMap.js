@@ -1,5 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
+import { sRGBEncoding } from "three";
 import { PMREMGenerator, TextureLoader } from "three";
 
 export function EnvMap() {
@@ -21,6 +22,7 @@ export function EnvMap() {
     // loader.setDataType(UnsignedByteType);
     loader.load(url, (texture) => {
       const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+      envMap.encoding = sRGBEncoding;
       scene.environment = envMap;
     });
 
