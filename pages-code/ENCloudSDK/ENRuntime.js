@@ -74,15 +74,20 @@ export class ENRuntime {
         });
       });
 
+      //
+      tirggerRegraph();
+    };
+
+    let tirggerRegraph = () => {
+      Signatures.now = getSignature();
       if (Signatures.last !== Signatures.now) {
         Signatures.last = Signatures.now;
         window.dispatchEvent(new CustomEvent("remake-graph"));
       }
-      Signatures.now = getSignature();
     };
 
     let handleOnSave = () => {
-      window.dispatchEvent(new CustomEvent("remake-graph"));
+      tirggerRegraph();
     };
 
     window.addEventListener("on-save", handleOnSave, false);
@@ -210,7 +215,7 @@ export class ENRuntime {
       rAFID = requestAnimationFrame(rAF);
     }
 
-    window.dispatchEvent(new CustomEvent("remake-graph"));
+    tirggerRegraph();
 
     return this;
   }
