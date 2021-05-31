@@ -35,12 +35,49 @@ let loadBattriesInFolder = () => {
 
 function EffectNode({ projectJSON }) {
   let three = useThree();
+
   useEffect(() => {
+    let vips = {
+      "?vip=susaye": {
+        customAvatarURL: "/ppl/susaye-v4.glb",
+        greetingsActionURL: "/actions/greetings/singing.fbx",
+      },
+      "?vip=susaye2": {
+        customAvatarURL: "/ppl/susaye-v4.glb",
+        greetingsActionURL: "/actions/greetings/backflip.fbx",
+      },
+      "?vip=charlie": {
+        customAvatarURL: "/ppl/charlie.glb",
+        greetingsActionURL: "/actions/greetings/backflip.fbx",
+      },
+      "?vip=patrick": {
+        customAvatarURL: "/ppl/patrick2.glb",
+        greetingsActionURL: "/actions/greetings/backflip.fbx",
+      },
+      "?vip=lok": {
+        customAvatarURL: "/ppl/lok-7.glb",
+        greetingsActionURL: "/actions/greetings/salute.fbx",
+      },
+      "?vip=lok2": {
+        customAvatarURL: "/ppl/lok-7.glb",
+        greetingsActionURL: "/actions/greetings/warmup.fbx",
+      },
+      "?vip=lok3": {
+        customAvatarURL: "/ppl/lok-7.glb",
+        greetingsActionURL: "/actions/greetings/hiphop.fbx",
+      },
+      "?vip=lok4": {
+        customAvatarURL: "/ppl/lok-7.glb",
+        greetingsActionURL: "/actions/greetings/singing.fbx",
+      },
+    };
+
     let enRunTime = new ENRuntime({
       projectJSON: projectJSON,
       enBatteries: loadBattriesInFolder(),
       userData: {
         ...three,
+        ...vips[window.location.search],
       },
     });
 

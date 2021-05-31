@@ -83,8 +83,19 @@ export const effect = async (node) => {
   });
 
   let fbx = {};
-  let gltf = await download(GLTFLoader, "/ppl/lok.glb");
-  fbx.waveHand = await download(FBXLoader, "/actions/greetings/waving-2.fbx");
+
+  let avatarURL = "/ppl/lok-7.glb";
+  if (node.userData.customAvatarURL) {
+    avatarURL = await node.userData.customAvatarURL;
+  }
+  let gltf = await download(GLTFLoader, avatarURL);
+
+  let grettingsURL = "/actions/greetings/waving-2.fbx";
+
+  if (node.userData.greetingsActionURL) {
+    grettingsURL = node.userData.greetingsActionURL;
+  }
+  fbx.waveHand = await download(FBXLoader, grettingsURL);
 
   let model = gltf.scene;
   model.traverse((item) => {

@@ -35,10 +35,15 @@ export const effect = async (node) => {
   controls.object.position.z = controls.target.z + 3;
 
   node.onLoop(() => {
+    if (controls.disposed____) {
+      return;
+    }
     controls.update();
   });
   node.onClean(() => {
+    controls.disposed____ = true;
     controls.dispose();
+    controls.enabled = false;
   });
 
   camera.near = 0.01;
