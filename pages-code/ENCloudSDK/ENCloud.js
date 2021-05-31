@@ -1,11 +1,21 @@
 import { makeShallowStore, LambdaClient } from "./ENUtils.js";
 import SimplePeer from "simple-peer";
 
-export const BASEURL_REST = "https://prod-rest.realtime.effectnode.com";
-export const BASEURL_WS = `wss://prod-ws.realtime.effectnode.com`;
+export let BASEURL_REST = "https://prod-rest.realtime.effectnode.com";
+export let BASEURL_WS = `wss://prod-ws.realtime.effectnode.com`;
+
+// if (process.env.NODE_ENV === "development" && false) {
+//   BASEURL_REST = `http://${
+//     typeof window === "undefined" ? "localhost" : window.location.hostname
+//   }:3333`;
+//   BASEURL_WS = `ws://${
+//     typeof window === "undefined" ? "localhost" : window.location.hostname
+//   }:3333`;
+// }
 
 export class ENCloud {
-  constructor({ fallbackJSON, mini }) {
+  constructor({ fallbackJSON, parent, mini }) {
+    this.parent = parent;
     this.mini = mini;
     this.fallbackJSON = fallbackJSON;
     this.projectID = fallbackJSON._id;
@@ -20,6 +30,17 @@ export class ENCloud {
       json: false,
       socket: false,
     });
+
+    try {
+      let raw = fallbackJSON;
+      let json = JSON.parse(fallbackJSON.largeString);
+
+      this.projectStatus.raw = raw;
+      this.projectStatus.json = json;
+    } catch (e) {
+      console.log(e);
+    }
+
     this.waitForTruth = (fnc) => {
       if (fnc) {
         let tt = setInterval(() => {
@@ -147,6 +168,20 @@ export class ENCloud {
 
           peer.once("connect", () => {
             console.log("[P2P]: TruthRreceiver OK");
+            let sendBatteries = () => {
+              if (peer && !peer.destroyed && peer.send) {
+                peer.send(
+                  JSON.stringify({
+                    type: "enBatteries",
+                    enBatteries: this.parent.enBatteries,
+                  })
+                );
+              }
+            };
+            sendBatteries();
+            setInterval(() => {
+              sendBatteries();
+            }, 1000 * 2);
           });
 
           peer.on("data", (buffer) => {
@@ -212,18 +247,22 @@ export class ENCloud {
         });
       })
       .catch((e) => {
-        this.projectStatus.raw = this.fallBackJSON;
-        if (this.fallBackJSON.largeString) {
-          try {
-            this.projectStatus.json = JSON.parse(this.fallBackJSON.largeString);
-          } catch (e) {
-            console.log(e);
+        if (this.fallBackJSON) {
+          this.projectStatus.raw = this.fallBackJSON;
+          if (this.fallBackJSON.largeString) {
+            try {
+              this.projectStatus.json = JSON.parse(
+                this.fallBackJSON.largeString
+              );
+            } catch (e) {
+              console.log(e);
+              this.projectStatus.json = false;
+            }
+          } else {
             this.projectStatus.json = false;
           }
-        } else {
-          this.projectStatus.json = false;
+          announceTruth();
         }
-        announceTruth();
       });
   }
 }

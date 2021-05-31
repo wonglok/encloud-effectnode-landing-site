@@ -353,10 +353,10 @@ export class LambdaClient extends EventEmitter {
   }
 }
 
-export const ProviderCache = new Map();
 
-export const provideLoaderURL = (Loader, url) => {
-  return new Promise((resolve) => {
+export const ProviderCache = new Map();
+export const provideURL = (Loader, url) =>
+  new Promise((resolve) => {
     if (ProviderCache.has(url)) {
       resolve(ProviderCache.get(url));
       return;
@@ -366,7 +366,6 @@ export const provideLoaderURL = (Loader, url) => {
       resolve(v);
     });
   });
-};
 
 export const easyEvent = (node, event, fnc) => {
   window.addEventListener(event, fnc);
@@ -380,6 +379,7 @@ export const sleep = (t) => {
     setTimeout(resolve, t);
   });
 };
+
 
 // export const makeReceiverPeer = ({ url }) => {
 //   let socket = new LambdaClient({

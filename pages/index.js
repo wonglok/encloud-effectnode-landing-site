@@ -1,9 +1,10 @@
-import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import Head from "next/head";
 import { useEffect } from "react";
 import { ENRuntime, BASEURL_REST } from "../pages-code/ENCloudSDK/ENRuntime";
 import { EnvMap } from "../pages-code/EnvMap/EnvMap";
+import { Bloomer } from "../pages-code/Bloomer/Bloomer";
+// import { VDBLoader } from "../pages-code/VDBLoader/VDBLoader";
 
 let getProjectJSON = () => {
   return {
@@ -38,7 +39,9 @@ function EffectNode({ projectJSON }) {
     let enRunTime = new ENRuntime({
       projectJSON: projectJSON,
       enBatteries: loadBattriesInFolder(),
-      userData: {},
+      userData: {
+        ...three,
+      },
     });
 
     Object.entries(three).forEach(([key, value]) => {
@@ -79,6 +82,36 @@ export async function getStaticProps(context) {
   };
 }
 
+// function Loopsy({ ...props }) {
+//   let texture = useTexture("/texture/eNeNeN.png");
+
+//   return (
+//     <Cylinder scale={0.3} {...props} args={[5, 5, 1.5, 32, 2, true]}>
+//       <meshBasicMaterial
+//         side={DoubleSide}
+//         transparent={true}
+//         blending={AdditiveBlending}
+//         map={texture}
+//       ></meshBasicMaterial>
+//     </Cylinder>
+//   );
+// }
+
+// function Looper({ children, ...props }) {
+//   let ref = useRef();
+
+//   useFrame((st, dt) => {
+//     //
+//     ref.current.rotation.y += dt;
+//   });
+
+//   return (
+//     <group ref={ref} {...props}>
+//       {children}
+//     </group>
+//   );
+// }
+
 export default function Home({ buildTimeCache }) {
   return (
     <div className={"h-full w-full"}>
@@ -87,9 +120,12 @@ export default function Home({ buildTimeCache }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Canvas>
+      <Canvas
+        dpr={(typeof window !== "undefined" && window.devicePixelRatio) || 1.0}
+      >
+        <Bloomer></Bloomer>
         {/*  */}
-        <OrbitControls></OrbitControls>
+        {/* <OrbitControls></OrbitControls> */}
 
         {/*  */}
         <EffectNode
@@ -98,15 +134,23 @@ export default function Home({ buildTimeCache }) {
 
         {/*  */}
         <directionalLight
-          position={[10, 10, 10]}
-          intensity={0.25}
+          position={[0, 10, -10]}
+          intensity={0.2}
         ></directionalLight>
 
         {/*  */}
-        <ambientLight intensity={0.25}></ambientLight>
+        <ambientLight intensity={0.2}></ambientLight>
 
         {/*  */}
         <EnvMap></EnvMap>
+
+        {/* <Suspense fallback={null}>
+          <group rotation-x={Math.PI * 0.085} rotation-z={Math.PI * 0.1}>
+            <Looper>
+              <Loopsy></Loopsy>
+            </Looper>
+          </group>
+        </Suspense> */}
 
         {/* <Sphere position-x={-1} args={[1, 25, 25]}>
           <meshStandardMaterial

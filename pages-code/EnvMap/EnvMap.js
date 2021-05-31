@@ -23,6 +23,7 @@ export function EnvMap() {
     loader.load(url, (texture) => {
       const envMap = pmremGenerator.fromEquirectangular(texture).texture;
       envMap.encoding = sRGBEncoding;
+      scene.background = envMap;
       scene.environment = envMap;
     });
 

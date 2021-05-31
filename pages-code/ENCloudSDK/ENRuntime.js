@@ -19,6 +19,7 @@ export class ENRuntime {
     this.encloud = new ENCloud({
       fallbackJSON: this.fallBackJSON,
       mini: this.mini,
+      parent: this,
     });
     this.projectJSON = false;
     this.autoStartLoop = autoStartLoop;
