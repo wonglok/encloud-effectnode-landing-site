@@ -83,6 +83,18 @@ function EffectNode({ projectJSON }) {
         customAvatarURL: "/ppl/lok-7.glb",
         greetingsActionURL: "/actions/greetings/singing.fbx",
       },
+      "?vip=henry": {
+        customAvatarURL: "/ppl/henry.glb",
+        greetingsActionURL: "/actions/greetings/singing.fbx",
+      },
+      "?vip=henry2": {
+        customAvatarURL: "/ppl/henry.glb",
+        greetingsActionURL: "/actions/greetings/backflip.fbx",
+      },
+      "?vip=henry3": {
+        customAvatarURL: "/ppl/henry.glb",
+        greetingsActionURL: "/actions/greetings/warmup.fbx",
+      },
     };
 
     let enRunTime = new ENRuntime({
