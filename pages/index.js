@@ -68,9 +68,15 @@ function EffectNode({ projectJSON }) {
         customAvatarURL: "/ppl/charlie.glb",
         greetingsActionURL: "/actions/greetings/backflip.fbx",
       },
+
+      // /actions/greetings/hiphop2.fbx
       "?vip=patrick": {
         customAvatarURL: "/ppl/patrick2.glb",
         greetingsActionURL: "/actions/greetings/backflip.fbx",
+      },
+      "?vip=patrick2": {
+        customAvatarURL: "/ppl/patrick2.glb",
+        greetingsActionURL: "/actions/greetings/hiphop2.fbx",
       },
       "?vip=lok": {
         customAvatarURL: "/ppl/lok-7.glb",
