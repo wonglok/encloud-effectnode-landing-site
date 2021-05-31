@@ -48,6 +48,17 @@ function EffectNode({ projectJSON }) {
         ringURL: "/texture/susaye-white-text.png",
         greetingsActionURL: "/actions/greetings/backflip.fbx",
       },
+      "?vip=susaye3": {
+        customAvatarURL: "/ppl/susaye2.glb",
+        ringURL: "/texture/susaye-white-text.png",
+        greetingsActionURL: "/actions/greetings/hiphop.fbx",
+      },
+      "?vip=susaye4": {
+        customAvatarURL: "/ppl/susaye2.glb",
+        ringURL: "/texture/susaye-white-text.png",
+        greetingsActionURL: "/actions/greetings/salute.fbx",
+      },
+
       "?vip=charlie": {
         customAvatarURL: "/ppl/charlie.glb",
         greetingsActionURL: "/actions/greetings/backflip.fbx",
