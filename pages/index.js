@@ -58,6 +58,11 @@ function EffectNode({ projectJSON }) {
         ringURL: "/texture/susaye-white-text.png",
         greetingsActionURL: "/actions/greetings/salute.fbx",
       },
+      "?vip=susaye5": {
+        customAvatarURL: "/ppl/susaye2.glb",
+        ringURL: "/texture/susaye-white-text.png",
+        greetingsActionURL: "/actions/greetings/hiphop2.fbx",
+      },
 
       "?vip=charlie": {
         customAvatarURL: "/ppl/charlie.glb",
@@ -79,10 +84,16 @@ function EffectNode({ projectJSON }) {
         customAvatarURL: "/ppl/lok-7.glb",
         greetingsActionURL: "/actions/greetings/hiphop.fbx",
       },
+
       "?vip=lok4": {
         customAvatarURL: "/ppl/lok-7.glb",
         greetingsActionURL: "/actions/greetings/singing.fbx",
       },
+      "?vip=lok5": {
+        customAvatarURL: "/ppl/lok-7.glb",
+        greetingsActionURL: "/actions/greetings/hiphop2.fbx",
+      },
+
       "?vip=henry": {
         customAvatarURL: "/ppl/henry.glb",
         greetingsActionURL: "/actions/greetings/singing.fbx",
