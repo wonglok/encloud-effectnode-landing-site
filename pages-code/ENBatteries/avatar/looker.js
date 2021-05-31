@@ -26,6 +26,8 @@ export const effect = async (node) => {
       passive: false,
     }
   );
+
+  //
   controls.enableDamping = true;
   controls.rotateSpeed = 1;
   AvatarHead.getWorldPosition(controls.target);

@@ -125,47 +125,19 @@ export default function Home({ buildTimeCache }) {
         dpr={(typeof window !== "undefined" && window.devicePixelRatio) || 1.0}
       >
         <Bloomer></Bloomer>
-        {/*  */}
-        {/* <OrbitControls></OrbitControls> */}
 
-        {/*  */}
         <EffectNode
           projectJSON={buildTimeCache || getProjectJSON()}
         ></EffectNode>
 
-        {/*  */}
         <directionalLight
           position={[0, 10, -10]}
-          intensity={0.2}
+          intensity={0.4}
         ></directionalLight>
 
-        {/*  */}
         <ambientLight intensity={0.2}></ambientLight>
 
-        {/*  */}
         <EnvMap></EnvMap>
-
-        {/* <Suspense fallback={null}>
-          <group rotation-x={Math.PI * 0.085} rotation-z={Math.PI * 0.1}>
-            <Looper>
-              <Loopsy></Loopsy>
-            </Looper>
-          </group>
-        </Suspense> */}
-
-        {/* <Sphere position-x={-1} args={[1, 25, 25]}>
-          <meshStandardMaterial
-            metalness={0.9}
-            roughness={0.1}
-          ></meshStandardMaterial>
-        </Sphere>
-
-        <Box position-x={1} args={[2, 2, 2, 25, 25, 25]}>
-          <meshStandardMaterial
-            metalness={0.9}
-            roughness={0.1}
-          ></meshStandardMaterial>
-        </Box> */}
       </Canvas>
     </div>
   );
