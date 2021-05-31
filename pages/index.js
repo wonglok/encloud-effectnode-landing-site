@@ -40,10 +40,12 @@ function EffectNode({ projectJSON }) {
     let vips = {
       "?vip=susaye": {
         customAvatarURL: "/ppl/susaye-v4.glb",
+        ringURL: "/texture/susaye-white-text.png",
         greetingsActionURL: "/actions/greetings/singing.fbx",
       },
       "?vip=susaye2": {
         customAvatarURL: "/ppl/susaye-v4.glb",
+        ringURL: "/texture/susaye-white-text.png",
         greetingsActionURL: "/actions/greetings/backflip.fbx",
       },
       "?vip=charlie": {

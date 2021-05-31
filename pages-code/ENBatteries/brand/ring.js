@@ -37,7 +37,10 @@ export const effect = async (node) => {
     metalness: 1,
     roughness: 0,
 
-    map: await download(TextureLoader, "/texture/eNeNeN-white.png"),
+    map: await download(
+      TextureLoader,
+      node.userData.ringURL || "/texture/eNeNeN-white.png"
+    ),
   });
 
   node.ready.RainbowEnvMap.then((tt) => {
