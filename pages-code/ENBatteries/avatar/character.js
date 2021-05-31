@@ -90,7 +90,8 @@ export const effect = async (node) => {
   }
   let gltf = await download(GLTFLoader, avatarURL);
 
-  let grettingsURL = "/actions/greetings/waving-2.fbx";
+  // let grettingsURL = "/actions/greetings/waving-2.fbx";
+  let grettingsURL = "/actions/greetings/hiphop2.fbx";
 
   if (node.userData.greetingsActionURL) {
     grettingsURL = node.userData.greetingsActionURL;
