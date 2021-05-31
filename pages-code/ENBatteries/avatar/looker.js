@@ -10,7 +10,24 @@ export const effect = async (node) => {
   await node.ready.PreloadDone;
 
   let controls = new OrbitControls(camera, renderer.domElement);
+  renderer.domElement.addEventListener(
+    "touchstart",
+    (e) => {
+      e.preventDefault();
+    },
+    { passive: false }
+  );
+  renderer.domElement.addEventListener(
+    "touchmove",
+    (e) => {
+      e.preventDefault();
+    },
+    {
+      passive: false,
+    }
+  );
   controls.enableDamping = true;
+  controls.rotateSpeed = 1;
   AvatarHead.getWorldPosition(controls.target);
   controls.object.position.y = controls.target.y + 0.12;
   controls.object.position.z = controls.target.z + 3;

@@ -46,6 +46,7 @@ function EffectNode({ projectJSON }) {
 
     Object.entries(three).forEach(([key, value]) => {
       enRunTime.mini.set(key, value);
+      console.log(key);
     });
 
     return () => {
