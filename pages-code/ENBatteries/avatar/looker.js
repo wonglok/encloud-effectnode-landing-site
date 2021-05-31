@@ -7,6 +7,7 @@ export const effect = async (node) => {
   let renderer = await node.ready.gl;
   let camera = await node.ready.camera;
   let AvatarHead = await node.ready.AvatarHead;
+  await node.ready.PreloadDone;
 
   let controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -24,4 +25,6 @@ export const effect = async (node) => {
   camera.near = 0.01;
   camera.far = 100000;
   camera.updateProjectionMatrix();
+
+  node.env.set("CameraAdjusted", true);
 };

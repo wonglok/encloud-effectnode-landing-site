@@ -21,6 +21,7 @@
     "simple-peer": "^9.11.0",
     "tailwindcss": "^2.1.2",
     "three": "^0.128.0",
+    "three-spritetext": "^1.6.2",
     "three-stdlib": "^2.0.3"
   }
 }

@@ -1,26 +1,11 @@
-import { AnimationMixer, FileLoader, MathUtils } from "three";
+import { AnimationMixer, Color, FileLoader, MathUtils } from "three";
 import { FBXLoader } from "three-stdlib";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { FolderName } from ".";
-import { enableBloom } from "../../Bloomer/Bloomer";
+import { enableBloom, enableDarken } from "../../Bloomer/Bloomer";
+import { download } from "../../Utils";
 
 export const title = FolderName + ".character";
-
-let download = async (classRef, url) => {
-  let fnc = download;
-  fnc.Cache = fnc.Cache || new Map();
-  let myCache = fnc.Cache;
-  return new Promise((resolve) => {
-    if (myCache.has(url)) {
-      resolve(myCache.get(url));
-    } else {
-      new classRef().load(url, (result) => {
-        myCache.set(url, result);
-        resolve(result);
-      });
-    }
-  });
-};
 
 /*
 
@@ -90,17 +75,15 @@ let processFace = ({ mesh, object, lerp = 0.2 }) => {
     );
   }
 };
-
 export const effect = async (node) => {
-  let scene = await node.ready.scene;
-
+  let ReadyGroup = await node.ready.ReadyGroup;
   let mixer = new AnimationMixer();
   node.onLoop((t, dt) => {
     mixer.update(dt);
   });
 
   let fbx = {};
-  let gltf = await download(GLTFLoader, "/ppl/lok-3.glb");
+  let gltf = await download(GLTFLoader, "/ppl/lok.glb");
   fbx.waveHand = await download(FBXLoader, "/actions/greetings/waving-2.fbx");
 
   let model = gltf.scene;
@@ -110,24 +93,46 @@ export const effect = async (node) => {
       item.frustumCulled = false;
     }
 
+    if (item) {
+      console.log(item.name);
+    }
+
     //
     if (item && item.material) {
-      //
-      // console.log(item.name);
-      //
+      // //
+      // //
       if (
         [
-          "EyeLeft",
-          "EyeRight",
-          "Wolf3D_Head",
-          "Wolf3D_Hair",
-          "Wolf3D_Body",
+          "Wolf3D_Outfit_Footwear",
+          "Wolf3D_Outfit_Top",
+          "Wolf3D_Outfit_Bottom",
         ].includes(item.name)
       ) {
+        // enableBloom(item);
+        enableDarken(item);
       } else {
-        enableBloom(item);
+        enableDarken(item);
+      }
+
+      if (
+        [
+          "Wolf3D_Glasses",
+          "Wolf3D_Hair",
+          "Wolf3D_Outfit_Top",
+          "Wolf3D_Outfit_Footwear",
+          "Wolf3D_Outfit_Bottom",
+        ].includes(item.name)
+      ) {
+        node.ready.RainbowEnvMap.then((envMap) => {
+          item.material.roughness = 0.0;
+          item.material.metalness = 1.0;
+          item.material.MapIntensity = 10.0;
+          item.material.envMap = envMap;
+        });
       }
     }
+
+    //
     if (item && item.morphTargetDictionary) {
       const obj = {};
       playFaceData({
@@ -148,11 +153,22 @@ export const effect = async (node) => {
   // Share avatar
   let Head = model.getObjectByName("Head");
   node.env.set("AvatarHead", Head);
+
+  //
   let Hips = model.getObjectByName("Hips");
   node.env.set("AvatarHips", Hips);
 
-  scene.add(model);
+  //
+  let RightHand = model.getObjectByName("RightHand");
+  node.env.set("AvatarRightHand", RightHand);
+
+  //
+  let LefttHand = model.getObjectByName("LefttHand");
+  node.env.set("AvatarLefttHand", LefttHand);
+
+  //
+  ReadyGroup.add(model);
   node.onClean(() => {
-    scene.remove(model);
+    ReadyGroup.remove(model);
   });
 };

@@ -7,15 +7,21 @@ import {
   Vector2,
   ShaderMaterial,
   Color,
+  Material,
 } from "three";
 
 // import { useTools } from "../useTools/useTools";
 
 export const ENTIRE_SCENE = 0;
 export const BLOOM_SCENE = 1;
+export const DARK_SCENE = 2;
 
 export const enableBloom = (item) => {
   item.layers.enable(BLOOM_SCENE);
+};
+
+export const enableDarken = (item) => {
+  item.layers.enable(DARK_SCENE);
 };
 
 export function Bloomer() {
@@ -62,8 +68,8 @@ export function Bloomer() {
     // window.removeEventListener("audio-info", audio);
 
     unrealPass.strength = 1.0;
-    unrealPass.threshold = 0.5;
-    unrealPass.radius = 0.6;
+    unrealPass.threshold = 0.2;
+    unrealPass.radius = 1.0;
     unrealPass.setSize(size.width, size.height);
 
     bloomComposer.addPass(unrealPass);
@@ -145,17 +151,33 @@ export function Bloomer() {
 
   // let materials = {};
   const darkMaterial = new MeshBasicMaterial({
-    color: "black",
+    color: new Color("#000000"),
+    skinning: true,
+  });
+  // let materials = {};
+
+  const darkMaterial2 = new MeshBasicMaterial({
+    color: new Color("#000000"),
     skinning: true,
   });
 
-  const bloomLayer = new Layers();
-  bloomLayer.set(BLOOM_SCENE);
+  const BloomLayer = new Layers();
+  BloomLayer.set(BLOOM_SCENE);
+
+  const DarkLayer = new Layers();
+  DarkLayer.set(DARK_SCENE);
 
   let cacheMap = new Map();
+  let cacheMapDark = new Map();
+
   function darkenNonBloomed(obj) {
-    if (obj.isMesh && bloomLayer.test(obj.layers) === false) {
-      // materials[obj.uuid] = obj.material;
+    if (DarkLayer.test(obj.layers) === true) {
+      cacheMapDark.set(obj.uuid, obj.material);
+      obj.material = obj.userData.darkMaterial || darkMaterial2;
+    } else if (
+      (obj.isMesh || obj.isSkinnedMesh) &&
+      BloomLayer.test(obj.layers) === false
+    ) {
       cacheMap.set(obj.uuid, obj.material);
       obj.material = obj.userData.darkMaterial || darkMaterial;
     }
@@ -166,10 +188,11 @@ export function Bloomer() {
       obj.material = cacheMap.get(obj.uuid);
       cacheMap.delete(obj.uuid);
     }
-    // if (materials[obj.uuid]) {
-    //   obj.material = materials[obj.uuid];
-    //   delete materials[obj.uuid];
-    // }
+
+    if (cacheMapDark.has(obj.uuid)) {
+      obj.material = cacheMapDark.get(obj.uuid);
+      cacheMapDark.delete(obj.uuid);
+    }
   }
 
   let run = (dt) => {

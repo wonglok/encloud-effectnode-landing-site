@@ -2548,6 +2548,11 @@ tapable@^2.2.0:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.0.tgz#5c373d281d9c672848213d0e037d1c4165ab426b"
   integrity sha512-FBk4IesMV1rBxX2tfiK8RAmogtWn53puLOQlvO8XuwlgxcYbP4mVPS9Ph4aeamSyyVjOl24aYWAuc8U5kCVwMw==
 
+three-spritetext@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/three-spritetext/-/three-spritetext-1.6.2.tgz#824e96db2ffe2148d26a7002d7b63ec11d19d0cf"
+  integrity sha512-VALj40t81Z6x/fDnY/tts8QU+mBl77bxoynBbcn/DW4oxfzZSwjaOfkQOe0jYpLoK2vtP0bAULvGgwIYnsN6oQ==
+
 three-stdlib@^2.0.1, three-stdlib@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.0.3.tgz#265068413a5239ca0d4d0a712ef047b9bd598dfb"
