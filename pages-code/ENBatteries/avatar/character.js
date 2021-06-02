@@ -8,7 +8,6 @@ import { download } from "../../Utils";
 export const title = FolderName + ".character";
 
 /*
-
   const obj = {};
   playFaceData({
     onFaceData: (object) => {
@@ -21,7 +20,6 @@ export const title = FolderName + ".character";
     },
     loop: true,
   });
-
 */
 
 let playFaceData = ({ onFaceData = () => {}, loop = false }) => {

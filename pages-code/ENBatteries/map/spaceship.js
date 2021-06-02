@@ -1,5 +1,6 @@
 import {
   Box3,
+  Color,
   DoubleSide,
   MeshMatcapMaterial,
   MeshStandardMaterial,
@@ -17,6 +18,7 @@ export const effect = async (node) => {
 
   let fbx = await download(FBXLoader, "/map/spaceship-walk.fbx");
   let silverMatCapTexture = await download(TextureLoader, "/matcap/silver.png");
+
   let envMap = await node.ready.RainbowEnvMap;
 
   // node.ready.RainbowEnvMap.then((envMap) => {
@@ -24,7 +26,10 @@ export const effect = async (node) => {
   // });
 
   let model = fbx;
-  let silver = new MeshMatcapMaterial({ matcap: silverMatCapTexture });
+  let silver = new MeshMatcapMaterial({
+    matcap: silverMatCapTexture,
+    color: new Color("ffffff"),
+  });
 
   let spaceScale = 3.0;
 

@@ -11,7 +11,7 @@ export const title = `${FolderName}.ready`;
 let preload = (afterwards) => {
   download(FBXLoader, "/map/spaceship-walk.fbx").then(afterwards);
   download(TextureLoader, "/matcap/silver.png").then(afterwards);
-  download(GLTFLoader, "/ppl/lok-5.glb").then(afterwards);
+  download(GLTFLoader, "/ppl/lok-7.glb").then(afterwards);
   download(FBXLoader, "/actions/greetings/waving-2.fbx").then(afterwards);
   download(TextureLoader, "/texture/eNeNeN-white.png").then(afterwards);
 };
@@ -19,6 +19,7 @@ let preload = (afterwards) => {
 preload(() => {});
 
 export const effect = async (node) => {
+  let camera = await node.ready.camera;
   let scene = await node.ready.scene;
   let renderer = await node.ready.gl;
   let o3d = new Object3D();
@@ -34,6 +35,7 @@ export const effect = async (node) => {
   var sprite = new SpriteText("Loading...");
   loader.scale.set(0.03, 0.03, 0.03);
   loader.add(sprite);
+  loader.position.z = -7.5;
 
   let total = 6;
   let now = 0;
@@ -57,24 +59,26 @@ export const effect = async (node) => {
   node.onLoop((st, dt) => {
     rainbow.compute({ time: st / 2 });
   });
+
   progress();
 
   //
   // preload
   preload(progress);
 
-  scene.add(loader);
+  camera.add(loader);
   node.onClean(() => {
-    scene.remove(loader);
+    camera.remove(loader);
   });
+  scene.add(camera);
 
   node.env
     .get("PreloadDone")
     .then(() => {
-      loader.visible = false;
       return node.env.get("CameraAdjusted");
     })
     .then(() => {
+      loader.visible = false;
       o3d.visible = true;
     });
 };
