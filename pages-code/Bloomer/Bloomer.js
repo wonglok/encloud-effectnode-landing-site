@@ -7,8 +7,8 @@ import {
   Vector2,
   ShaderMaterial,
   Color,
-  Material,
 } from "three";
+import { Text } from "troika-three-text";
 
 // import { useTools } from "../useTools/useTools";
 
@@ -175,7 +175,7 @@ export function Bloomer() {
       cacheMapDark.set(obj.uuid, obj.material);
       obj.material = obj.userData.darkMaterial || darkMaterial2;
     } else if (
-      (obj.isMesh || obj.isSkinnedMesh) &&
+      (obj.isMesh || obj.isSkinnedMesh || obj.text) &&
       BloomLayer.test(obj.layers) === false
     ) {
       cacheMap.set(obj.uuid, obj.material);

@@ -30,6 +30,7 @@ export const effect = async (node) => {
   //
   controls.enableDamping = true;
   controls.rotateSpeed = 1;
+
   AvatarHead.getWorldPosition(controls.target);
   controls.object.position.y = controls.target.y + 0.12;
   controls.object.position.z = controls.target.z + 3;
@@ -38,6 +39,7 @@ export const effect = async (node) => {
     if (controls.disposed____) {
       return;
     }
+    AvatarHead.getWorldPosition(controls.target);
     controls.update();
   });
   node.onClean(() => {

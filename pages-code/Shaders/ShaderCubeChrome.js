@@ -13,6 +13,7 @@ import {
   Color,
   LinearMipmapLinearFilter,
 } from "three";
+import { sRGBEncoding } from "three";
 import {
   Vector2,
   MeshBasicMaterial,
@@ -242,20 +243,23 @@ export class ShaderCubeChrome {
             // vec4 water = waterwaves(gl_FragCoord.xy, vec2(resolution.xy), time * 0.05);
 
             gl_FragColor = vec4(vec3(
-              0.1 + pattern(uv * 5.0123 + -0.37 * cos(time * 0.05)),
-              0.1 + pattern(uv * 5.0123 +  0.0 * cos(time * 0.05)),
-              0.1 + pattern(uv * 5.0123 +  0.37 * cos(time * 0.05))
+              0.35 + pattern(uv * 5.0123 + -0.17 * cos(time * 0.05)),
+              0.35 + pattern(uv * 5.0123 +  0.0 * cos(time * 0.05)),
+              0.35 + pattern(uv * 5.0123 +  0.17 * cos(time * 0.05))
             ) * diffuse, 1.0);
+
             // gl_FragColor.rgb *= gl_FragColor.rgb;
             // gl_FragColor = water;
           }
       `,
     });
 
+    this.renderTargetPlane.texture.encoding = sRGBEncoding;
     this.renderTargetPlane.texture.mapping = EquirectangularReflectionMapping;
     // this.renderTargetCube.texture.mapping = CubeReflectionMapping
     this.renderTargetCube.texture.mapping = CubeRefractionMapping;
     this.renderTargetCube.texture.mapping = CubeReflectionMapping;
+    this.renderTargetCube.texture.encoding = sRGBEncoding;
 
     this.renderTargetCube.setup(this.renderer, this.renderTargetPlane.texture);
 

@@ -103,9 +103,9 @@ export const effect = async (node) => {
       item.frustumCulled = false;
     }
 
-    if (item) {
-      console.log(item.name);
-    }
+    // if (item) {
+    //   console.log(item.name);
+    // }
 
     //
     if (item && item.material) {

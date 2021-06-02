@@ -17,7 +17,10 @@ export const effect = async (node) => {
   let ReadyGroup = await node.ready.ReadyGroup;
 
   let fbx = await download(FBXLoader, "/map/spaceship-walk.fbx");
-  let silverMatCapTexture = await download(TextureLoader, "/matcap/silver.png");
+  let silverMatCapTexture = await download(
+    TextureLoader,
+    "/matcap/silver2.png"
+  );
 
   let envMap = await node.ready.RainbowEnvMap;
 
@@ -28,7 +31,7 @@ export const effect = async (node) => {
   let model = fbx;
   let silver = new MeshMatcapMaterial({
     matcap: silverMatCapTexture,
-    color: new Color("ffffff"),
+    color: new Color("#777777"),
   });
 
   let spaceScale = 3.0;
@@ -72,6 +75,7 @@ export const effect = async (node) => {
           roughness: 0,
         });
       }
+
       if (item.name === "Mesh016") {
         item.material = new MeshStandardMaterial({
           envMap: envMap,
@@ -79,6 +83,7 @@ export const effect = async (node) => {
           roughness: 0,
         });
       }
+
       if (item.name === "Mesh003") {
         item.material = new MeshStandardMaterial({
           envMap: envMap,
@@ -97,6 +102,7 @@ export const effect = async (node) => {
       if (item.name === "Mesh013") {
         item.material = silver;
       }
+
       item.material.side = DoubleSide;
     }
   });
