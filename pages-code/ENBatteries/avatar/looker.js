@@ -1,3 +1,4 @@
+import { Vector3 } from "three";
 import { OrbitControls } from "three-stdlib";
 import { FolderName } from ".";
 
@@ -10,6 +11,7 @@ export const effect = async (node) => {
   await node.ready.PreloadDone;
 
   let controls = new OrbitControls(camera, renderer.domElement);
+  //
   renderer.domElement.addEventListener(
     "touchstart",
     (e) => {
@@ -17,6 +19,7 @@ export const effect = async (node) => {
     },
     { passive: false }
   );
+  //
   renderer.domElement.addEventListener(
     "touchmove",
     (e) => {
@@ -32,16 +35,23 @@ export const effect = async (node) => {
   controls.rotateSpeed = 1;
 
   AvatarHead.getWorldPosition(controls.target);
-  controls.object.position.y = controls.target.y + 0.12;
-  controls.object.position.z = controls.target.z + 3;
+  camera.position.y = controls.target.y + 0.12;
+  camera.position.z = controls.target.z + 3.5;
 
+  controls.enabled = false;
+
+  let controlTarget = new Vector3();
   node.onLoop(() => {
     if (controls.disposed____) {
       return;
     }
-    AvatarHead.getWorldPosition(controls.target);
+
+    AvatarHead.getWorldPosition(controlTarget);
+
+    controls.target.lerp(controlTarget, 0.05);
     controls.update();
   });
+
   node.onClean(() => {
     controls.disposed____ = true;
     controls.dispose();

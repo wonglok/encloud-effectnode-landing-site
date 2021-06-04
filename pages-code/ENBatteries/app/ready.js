@@ -11,7 +11,7 @@ export const title = `${FolderName}.ready`;
 let preload = (afterwards) => {
   download(FBXLoader, "/map/spaceship-walk.fbx").then(afterwards);
   download(TextureLoader, "/matcap/silver.png").then(afterwards);
-  download(GLTFLoader, "/ppl/lok-7.glb").then(afterwards);
+  // download(GLTFLoader, "/ppl/lok-7.glb").then(afterwards);
   download(FBXLoader, "/actions/greetings/waving-2.fbx").then(afterwards);
   download(TextureLoader, "/texture/eNeNeN-white.png").then(afterwards);
 };
@@ -30,14 +30,14 @@ export const effect = async (node) => {
 
   // let loader = new Mesh(new MeshBasicMaterial({  color: 'red' }))
   let loader = new Object3D();
-  loader.visible = true;
+  loader.userData.isLoader = true;
 
   var sprite = new SpriteText("Loading...");
   loader.scale.set(0.03, 0.03, 0.03);
   loader.add(sprite);
   loader.position.z = -7.5;
 
-  let total = 6;
+  let total = 5;
   let now = 0;
   let progress = () => {
     now++;
@@ -61,9 +61,6 @@ export const effect = async (node) => {
   });
 
   progress();
-
-  //
-  // preload
   preload(progress);
 
   camera.add(loader);
@@ -72,16 +69,37 @@ export const effect = async (node) => {
   });
   scene.add(camera);
 
+  //
+  camera.traverse((item) => {
+    if (item.userData.isLoader) {
+      item.visible = true;
+    }
+    if (item.userData.isGUI) {
+      item.visible = false;
+    }
+  });
+
+  // isGUI
   node.env
     .get("PreloadDone")
     .then(() => {
       return node.env.get("CameraAdjusted");
     })
     .then(() => {
-      loader.visible = false;
+      //
+      camera.traverse((item) => {
+        if (item.userData.isLoader) {
+          item.visible = false;
+        }
+        if (item.userData.isGUI) {
+          item.visible = true;
+        }
+      });
+
+      window.dispatchEvent(new CustomEvent("show-hud", { detail: {} }));
+
       o3d.visible = true;
     });
 };
 
-//
 //

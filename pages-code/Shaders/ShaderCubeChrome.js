@@ -13,6 +13,7 @@ import {
   Color,
   LinearMipmapLinearFilter,
 } from "three";
+
 import { sRGBEncoding } from "three";
 import {
   Vector2,

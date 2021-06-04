@@ -1,28 +1,13 @@
-import { AnimationMixer, Color, FileLoader, MathUtils } from "three";
+import { AnimationMixer, FileLoader, MathUtils } from "three";
 import { FBXLoader } from "three-stdlib";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { FolderName } from ".";
-import { enableBloom, enableDarken } from "../../Bloomer/Bloomer";
+import { enableDarken, enableBloom } from "../../Bloomer/Bloomer";
 import { download } from "../../Utils";
 
 export const title = FolderName + ".character";
 
-/*
-  const obj = {};
-  playFaceData({
-    onFaceData: (object) => {
-
-      for (let kn in object) {
-        obj[kn] = object[kn];
-      }
-
-      processFace({ mesh: item, object: obj, lerp: 0.2 });
-    },
-    loop: true,
-  });
-*/
-
-let playFaceData = ({ onFaceData = () => {}, loop = false }) => {
+let playFaceData = ({ onFrame = () => {}, loop = false }) => {
   new FileLoader().load("/facedata/eye.json-line", (file) => {
     let data = [];
     file.split("\n").forEach((e) => {
@@ -43,7 +28,7 @@ let playFaceData = ({ onFaceData = () => {}, loop = false }) => {
           setTimeout(send, 1000 / 120);
         }
       } else {
-        onFaceData(has);
+        onFrame(has);
         setTimeout(send, 1000 / 120);
       }
     };
@@ -75,20 +60,22 @@ let processFace = ({ mesh, object, lerp = 0.2 }) => {
 };
 export const effect = async (node) => {
   let ReadyGroup = await node.ready.ReadyGroup;
+
   let mixer = new AnimationMixer();
+
   node.onLoop((t, dt) => {
     mixer.update(dt);
   });
 
   let fbx = {};
 
-  let avatarURL = "/ppl/lok-7.glb";
+  let avatarURL = "/ppl/lok-white-armor.glb";
   if (node.userData.customAvatarURL) {
     avatarURL = await node.userData.customAvatarURL;
   }
+
   let gltf = await download(GLTFLoader, avatarURL);
 
-  // let grettingsURL = "/actions/greetings/waving-2.fbx";
   let grettingsURL = "/actions/greetings/hiphop2.fbx";
 
   if (node.userData.greetingsActionURL) {
@@ -97,20 +84,15 @@ export const effect = async (node) => {
   fbx.waveHand = await download(FBXLoader, grettingsURL);
 
   let model = gltf.scene;
+  model.scale.set(1.0, 1.0, 1.0);
   model.traverse((item) => {
     //
     if (item && item.geometry) {
       item.frustumCulled = false;
     }
 
-    // if (item) {
-    //   console.log(item.name);
-    // }
-
     //
     if (item && item.material) {
-      // //
-      // //
       if (
         [
           "Wolf3D_Outfit_Footwear",
@@ -136,17 +118,16 @@ export const effect = async (node) => {
         node.ready.RainbowEnvMap.then((envMap) => {
           item.material.roughness = 0.0;
           item.material.metalness = 1.0;
-          item.material.MapIntensity = 10.0;
+          item.material.envMapIntensity = 3.5;
           item.material.envMap = envMap;
         });
       }
     }
 
-    //
     if (item && item.morphTargetDictionary) {
       const obj = {};
       playFaceData({
-        onFaceData: (object) => {
+        onFrame: (object) => {
           for (let kn in object) {
             obj[kn] = object[kn];
           }
@@ -159,6 +140,35 @@ export const effect = async (node) => {
 
   let waveHand = mixer.clipAction(fbx.waveHand.animations[0], model);
   waveHand.play();
+  let last = waveHand;
+  let acts = [
+    "/actions/greetings/backflip.fbx",
+    "/actions/greetings/bow-informal.fbx",
+    "/actions/greetings/hiphop2.fbx",
+    "/actions/greetings/salute.fbx",
+    "/actions/greetings/waving-3.fbx",
+    "/actions/greetings/warmup.fbx",
+    "/actions/greetings/singing.fbx",
+    "/actions/greetings/waving-1.fbx",
+    "/actions/greetings/waving-2.fbx",
+    "/actions/greetings/waving-4.fbx",
+  ];
+
+  window.addEventListener("click-logo", () => {
+    download(FBXLoader, acts[Math.floor(acts.length * Math.random())]).then(
+      (fbx) => {
+        let action = mixer.clipAction(fbx.animations[0], model);
+        requestAnimationFrame(() => {
+          if (last) {
+            last.fadeOut(0.5);
+          }
+          action.reset();
+          action.play();
+          last = action;
+        });
+      }
+    );
+  });
 
   // Share avatar
   let Head = model.getObjectByName("Head");

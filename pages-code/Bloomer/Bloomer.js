@@ -24,9 +24,11 @@ export const enableDarken = (item) => {
   item.layers.enable(DARK_SCENE);
 };
 
-export function Bloomer() {
+export function Bloomer({ myScene = false }) {
   // let tool = useTools();
   let { gl, size, scene, camera } = useThree();
+
+  let activeScene = myScene || scene;
   //
   let {
     // baseRTT,
@@ -50,7 +52,7 @@ export function Bloomer() {
     let {
       RenderPass,
     } = require("three/examples/jsm/postprocessing/RenderPass");
-    let renderPass = new RenderPass(scene, camera);
+    let renderPass = new RenderPass(activeScene, camera);
     bloomComposer.addPass(renderPass);
 
     let {
@@ -154,8 +156,8 @@ export function Bloomer() {
     color: new Color("#000000"),
     skinning: true,
   });
-  // let materials = {};
 
+  // let materials = {};
   const darkMaterial2 = new MeshBasicMaterial({
     color: new Color("#000000"),
     skinning: true,
@@ -171,11 +173,13 @@ export function Bloomer() {
   let cacheMapDark = new Map();
 
   function darkenNonBloomed(obj) {
-    if (DarkLayer.test(obj.layers) === true) {
+    if (obj.text) {
+      obj.visible = false;
+    } else if (DarkLayer.test(obj.layers) === true) {
       cacheMapDark.set(obj.uuid, obj.material);
       obj.material = obj.userData.darkMaterial || darkMaterial2;
     } else if (
-      (obj.isMesh || obj.isSkinnedMesh || obj.text) &&
+      (obj.isMesh || obj.isSkinnedMesh || obj.isSprite) &&
       BloomLayer.test(obj.layers) === false
     ) {
       cacheMap.set(obj.uuid, obj.material);
@@ -184,6 +188,10 @@ export function Bloomer() {
   }
 
   function restoreMaterial(obj) {
+    if (obj.text) {
+      obj.visible = true;
+    }
+
     if (cacheMap.has(obj.uuid)) {
       obj.material = cacheMap.get(obj.uuid);
       cacheMap.delete(obj.uuid);
@@ -196,23 +204,32 @@ export function Bloomer() {
   }
 
   let run = (dt) => {
-    let origBG = scene.background;
+    gl.autoClear = false;
+    gl.clear();
+
+    let origBG = activeScene.background;
 
     //
     gl.shadowMap.enabled = false;
-    scene.background = null;
-    scene.traverse(darkenNonBloomed);
+    activeScene.background = null;
+    activeScene.traverse(darkenNonBloomed);
     bloomComposer.render(dt);
     //
     gl.shadowMap.enabled = true;
-    scene.background = origBG;
-    scene.traverse(restoreMaterial);
+    activeScene.background = origBG;
+    activeScene.traverse(restoreMaterial);
     finalComposer.render(dt);
+
+    if (scene.userData.myScene && scene.userData.myOrtho) {
+      gl.setRenderTarget(null);
+      gl.clearDepth();
+      gl.render(scene.userData.myScene, scene.userData.myOrtho);
+    }
   };
 
   useFrame((state, dt) => {
     run(dt);
-  }, 1);
+  }, 1000);
 
-  return <group></group>;
+  return null;
 }

@@ -113,7 +113,7 @@ export const effect = async (node) => {
   const size = new Vector3().copy(box.max).sub(box.min);
   model.position.y = size.y / 2 - 1.475 * spaceScale;
 
-  console.log(box);
+  // console.log(box);
 
   ReadyGroup.add(model);
   node.onClean(() => {

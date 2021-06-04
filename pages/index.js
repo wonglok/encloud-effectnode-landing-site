@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { ENRuntime, BASEURL_REST } from "../pages-code/ENCloudSDK/ENRuntime";
 import { EnvMap } from "../pages-code/EnvMap/EnvMap";
 import { Bloomer } from "../pages-code/Bloomer/Bloomer";
+
 // import { VDBLoader } from "../pages-code/VDBLoader/VDBLoader";
 
 let getProjectJSON = () => {
@@ -24,16 +25,39 @@ let getProjectJSON = () => {
 
 let loadBattriesInFolder = () => {
   let enBatteries = [];
-  let reqq = require.context("../pages-code/ENBatteries/", true, /\.js$/);
+  let reqq = require.context(
+    "../pages-code/ENBatteries/",
+    true,
+    /\.js$/,
+    "lazy"
+  );
   let keys = reqq.keys();
+
   keys.forEach((key) => {
-    enBatteries.push(reqq(key));
+    let title = key;
+
+    title = title.replace("./", "");
+    title = title.replace("/", ".");
+    title = title.replace(".js", "");
+
+    if (title.indexOf(".index") !== -1) {
+      return;
+    }
+
+    enBatteries.push({
+      title,
+      effect: (node) => {
+        reqq(key).then(({ effect }) => {
+          effect(node);
+        });
+      },
+    });
   });
 
   return enBatteries;
 };
 
-function EffectNode({ projectJSON }) {
+function EffectNode({ myScene, projectJSON }) {
   let three = useThree();
 
   useEffect(() => {
@@ -128,14 +152,16 @@ function EffectNode({ projectJSON }) {
       projectJSON: projectJSON,
       enBatteries: loadBattriesInFolder(),
       userData: {
-        ...three,
         ...vips[window.location.search],
       },
     });
 
     Object.entries(three).forEach(([key, value]) => {
-      enRunTime.mini.set(key, value);
-      console.log(key);
+      if (key === "scene") {
+        enRunTime.mini.set(key, myScene || value);
+      } else {
+        enRunTime.mini.set(key, value);
+      }
     });
 
     return () => {
@@ -172,36 +198,6 @@ export async function getStaticProps(context) {
   };
 }
 
-// function Loopsy({ ...props }) {
-//   let texture = useTexture("/texture/eNeNeN.png");
-
-//   return (
-//     <Cylinder scale={0.3} {...props} args={[5, 5, 1.5, 32, 2, true]}>
-//       <meshBasicMaterial
-//         side={DoubleSide}
-//         transparent={true}
-//         blending={AdditiveBlending}
-//         map={texture}
-//       ></meshBasicMaterial>
-//     </Cylinder>
-//   );
-// }
-
-// function Looper({ children, ...props }) {
-//   let ref = useRef();
-
-//   useFrame((st, dt) => {
-//     //
-//     ref.current.rotation.y += dt;
-//   });
-
-//   return (
-//     <group ref={ref} {...props}>
-//       {children}
-//     </group>
-//   );
-// }
-
 export default function Home({ buildTimeCache }) {
   return (
     <div className={"h-full w-full"}>
@@ -213,8 +209,6 @@ export default function Home({ buildTimeCache }) {
       <Canvas
         dpr={(typeof window !== "undefined" && window.devicePixelRatio) || 1.0}
       >
-        <Bloomer></Bloomer>
-
         <EffectNode
           projectJSON={buildTimeCache || getProjectJSON()}
         ></EffectNode>
@@ -227,6 +221,8 @@ export default function Home({ buildTimeCache }) {
         <ambientLight intensity={0.2}></ambientLight>
 
         <EnvMap></EnvMap>
+
+        <Bloomer></Bloomer>
       </Canvas>
     </div>
   );
