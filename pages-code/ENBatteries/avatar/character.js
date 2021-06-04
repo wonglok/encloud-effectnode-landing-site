@@ -143,16 +143,25 @@ export const effect = async (node) => {
   let last = false;
   let idx = 0;
   let acts = [
-    { msg: `Welcome to Effect Node!`, fbx: "/actions/greetings/waving-1.fbx" },
-    { msg: `Let me do a backflip!`, fbx: "/actions/greetings/backflip.fbx" },
+    { msg: `Welcome to Effect Node.`, fbx: "/actions/greetings/waving-1.fbx" },
     {
-      msg: `The ring represent \nour dedication in research\n for effect node`,
+      msg: `Let me do a backflip!`,
+      fbx: "/actions/greetings/backflip.fbx",
+    },
+    {
+      msg: `The loop ring represent \nour dedication for vfx on web.`,
       fbx: "/actions/greetings/salute.fbx",
     },
     {
-      msg: `The ring represent \nour dedication in research\n for effect node`,
+      msg: `The loop ring represent \nour dedication for vfx on web.`,
       fbx: "/actions/greetings/salute.fbx",
     },
+    {
+      msg: `You can unleash your coding potential with effect node.`,
+      fbx: "/actions/greetings/magic-2h-expo.fbx",
+      emit: "ring-expand",
+    },
+
     // {
     //   msg: `EffectNode can make avatar dance too.`,
     //   fbx: "/actions/greetings/hiphop.fbx",
@@ -177,7 +186,6 @@ export const effect = async (node) => {
 
     { msg: `Thank you!`, fbx: "/actions/greetings/bow-informal.fbx" },
 
-    // { msg: `Hi!`, fbx: "/actions/greetings/waving-1.fbx" },
     // { msg: `Hello`, fbx: "/actions/greetings/waving-2.fbx" },
     // { msg: `Welcome!`, fbx: "/actions/greetings/waving-3.fbx" },
     // { msg: `Thank you for coming.`, fbx: "/actions/greetings/waving-4.fbx" },
@@ -193,6 +201,9 @@ export const effect = async (node) => {
     idx++;
 
     download(FBXLoader, actURL).then((fbx) => {
+      if (act.emit) {
+        node.events.emit(act.emit, { duration: fbx.animations[0].duration });
+      }
       let action = mixer.clipAction(fbx.animations[0], model);
       if (last) {
         last.fadeOut(0.5);
@@ -218,13 +229,16 @@ export const effect = async (node) => {
   let Hips = model.getObjectByName("Hips");
   node.env.set("AvatarHips", Hips);
 
+  model.traverse((item) => {
+    console.log(item.name);
+  });
   //
   let RightHand = model.getObjectByName("RightHand");
-  node.env.set("AvatarRightHand", RightHand);
+  node.env.set("AvaRightHand", RightHand);
 
   //
-  let LefttHand = model.getObjectByName("LefttHand");
-  node.env.set("AvatarLefttHand", LefttHand);
+  let LefttHand = model.getObjectByName("LeftHand");
+  node.env.set("AvaLefttHand", LefttHand);
 
   //
   ReadyGroup.add(model);
