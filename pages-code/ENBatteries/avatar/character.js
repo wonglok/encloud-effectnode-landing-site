@@ -138,17 +138,17 @@ export const effect = async (node) => {
     }
   });
 
-  let waveHand = mixer.clipAction(fbx.waveHand.animations[0], model);
-  waveHand.play();
-  let last = waveHand;
+  // let waveHand = mixer.clipAction(fbx.waveHand.animations[0], model);
+  // waveHand.play();
+  let last = false;
   let idx = 0;
   let acts = [
+    { msg: `Welcome to Effect Node!`, fbx: "/actions/greetings/waving-1.fbx" },
     { msg: `Let me do a backflip!`, fbx: "/actions/greetings/backflip.fbx" },
-    // { msg: `Welcome dear!`, fbx: "/actions/greetings/bow-informal.fbx" },
-    {
-      msg: `EffectNode can make avatar dance too.`,
-      fbx: "/actions/greetings/hiphop.fbx",
-    },
+    // {
+    //   msg: `EffectNode can make avatar dance too.`,
+    //   fbx: "/actions/greetings/hiphop.fbx",
+    // },
     // {
     //   msg: `EffectNode can make more dance moves.`,
     //   fbx: "/actions/greetings/hiphop2.fbx",
@@ -157,43 +157,52 @@ export const effect = async (node) => {
     //   msg: `EffectNode respects your vision.`,
     //   fbx: "/actions/greetings/salute.fbx",
     // },
+
     {
-      msg: `EffectNode is battle tested, ready for production.`,
+      msg: `The ring represent our dedication in research for effect node`,
+      fbx: "/actions/greetings/salute.fbx",
+    },
+    {
+      msg: `Effect Node is Battle tested,\n ready for production.`,
       fbx: "/actions/greetings/warmup.fbx",
     },
     {
       msg: `EffectNode is working on face capture for avatars.`,
       fbx: "/actions/greetings/singing.fbx",
     },
+    { msg: `Thank you!`, fbx: "/actions/greetings/bow-informal.fbx" },
+
     // { msg: `Hi!`, fbx: "/actions/greetings/waving-1.fbx" },
     // { msg: `Hello`, fbx: "/actions/greetings/waving-2.fbx" },
     // { msg: `Welcome!`, fbx: "/actions/greetings/waving-3.fbx" },
-    { msg: `Thank you for coming.`, fbx: "/actions/greetings/waving-4.fbx" },
+    // { msg: `Thank you for coming.`, fbx: "/actions/greetings/waving-4.fbx" },
   ];
+
+  let timer = 0;
 
   node.events.on("click-logo", (ev) => {
     let act = acts[idx % acts.length];
 
     let actURL = act.fbx;
-    if (ev && ev.type === "ring") {
-      actURL = "/actions/greetings/salute.fbx";
-    } else {
-      node.events.emit("cta-text", { text: act.msg });
-      idx++;
-    }
+    node.events.emit("cta-text", { text: act.msg });
+    idx++;
 
     download(FBXLoader, actURL).then((fbx) => {
       let action = mixer.clipAction(fbx.animations[0], model);
-      requestAnimationFrame(() => {
-        if (last) {
-          last.fadeOut(0.5);
-        }
-        action.reset();
-        action.play();
-        last = action;
-      });
+      if (last) {
+        last.fadeOut(0.5);
+      }
+      action.reset();
+      action.play();
+      last = action;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        node.events.emit("click-logo", {});
+      }, action.getClip().duration * 1000);
     });
   });
+
+  node.events.emit("click-logo", {});
 
   // Share avatar
   let Head = model.getObjectByName("Head");

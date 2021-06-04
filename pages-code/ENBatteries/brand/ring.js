@@ -10,7 +10,7 @@ import { FolderName } from ".";
 import { enableBloom } from "../../Bloomer/Bloomer";
 import { download } from "../../Utils";
 import { InteractionManager } from "three.interactive";
-
+import anime from "animejs";
 export const title = FolderName + ".ring";
 
 export const effect = async (node) => {
@@ -68,9 +68,13 @@ export const effect = async (node) => {
 
   mesh.addEventListener("mouseover", (event) => {
     document.body.style.cursor = "pointer";
-    node.events.emit("click-logo", { type: "ring" });
-    node.events.emit("cta-text", { type: "ring" });
+    anime({
+      targets: [mesh.rotation],
+      y: mesh.rotation.y - Math.PI * 0.5,
+      duration: 5000,
+    });
   });
+
   mesh.addEventListener("mouseout", (event) => {
     document.body.style.cursor = "";
   });

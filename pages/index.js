@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { ENRuntime, BASEURL_REST } from "../pages-code/ENCloudSDK/ENRuntime";
 import { EnvMap } from "../pages-code/EnvMap/EnvMap";
 import { Bloomer } from "../pages-code/Bloomer/Bloomer";
+import { download } from "../pages-code/Utils";
+import { FBXLoader } from "three-stdlib";
+import { TextureLoader } from "three";
 
 // import { VDBLoader } from "../pages-code/VDBLoader/VDBLoader";
 
@@ -161,6 +164,21 @@ function EffectNode({ myScene, projectJSON }) {
         enRunTime.mini.set(key, myScene || value);
       } else {
         enRunTime.mini.set(key, value);
+      }
+    });
+
+    const preload = (afterwards) => {
+      download(FBXLoader, "/map/spaceship-walk.fbx").then(afterwards);
+      download(TextureLoader, "/matcap/silver.png").then(afterwards);
+      download(TextureLoader, "/texture/eNeNeN-white.png").then(afterwards);
+    };
+
+    let i = 0;
+    let tt = 3;
+    preload(() => {
+      i++;
+      if (i === tt) {
+        enRunTime.mini.set("PreloadDone", true);
       }
     });
 

@@ -8,9 +8,6 @@ import {
   ShaderMaterial,
   Color,
 } from "three";
-import { Text } from "troika-three-text";
-
-// import { useTools } from "../useTools/useTools";
 
 export const ENTIRE_SCENE = 0;
 export const BLOOM_SCENE = 1;
@@ -69,8 +66,8 @@ export function Bloomer({ myScene = false }) {
     window.addEventListener("audio-info", audio);
     // window.removeEventListener("audio-info", audio);
 
-    unrealPass.strength = 1.0;
-    unrealPass.threshold = 0.2;
+    unrealPass.strength = 1.3;
+    unrealPass.threshold = 0.15;
     unrealPass.radius = 1.0;
     unrealPass.setSize(size.width, size.height);
 

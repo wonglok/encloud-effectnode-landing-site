@@ -41,16 +41,19 @@ class LokLokSprite {
 
     sprite.center.set(0, 1);
 
-    node.onLoop(() => {
+    node.onLoop((dt, st) => {
       let vp = viewport.getCurrentViewport();
       let vmax = Math.max(vp.width, vp.height);
       if (vmax >= 5) {
         vmax = 5;
       }
-
-      sprite.position.z = -vp.distance * 2;
+      sprite.dt = sprite.dt || 0;
+      sprite.dt += dt;
       sprite.position.x = -vp.width + vmax * 0.03;
       sprite.position.y = vp.height - vmax * 0.03;
+      sprite.position.z = -vp.distance * 2;
+
+      sprite.rotation.z += 2;
 
       let aspect = texture.image.width / texture.image.height;
 

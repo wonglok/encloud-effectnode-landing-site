@@ -6,29 +6,30 @@ export const title = FolderName + ".looker";
 
 export const effect = async (node) => {
   let renderer = await node.ready.gl;
+  let scene = await node.ready.scene;
   let camera = await node.ready.camera;
   let AvatarHead = await node.ready.AvatarHead;
   await node.ready.PreloadDone;
 
   let controls = new OrbitControls(camera, renderer.domElement);
   //
-  renderer.domElement.addEventListener(
-    "touchstart",
-    (e) => {
-      e.preventDefault();
-    },
-    { passive: false }
-  );
-  //
-  renderer.domElement.addEventListener(
-    "touchmove",
-    (e) => {
-      e.preventDefault();
-    },
-    {
-      passive: false,
-    }
-  );
+  // renderer.domElement.addEventListener(
+  //   "touchstart",
+  //   (e) => {
+  //     e.preventDefault();
+  //   },
+  //   { passive: false }
+  // );
+  // //
+  // renderer.domElement.addEventListener(
+  //   "touchmove",
+  //   (e) => {
+  //     e.preventDefault();
+  //   },
+  //   {
+  //     passive: false,
+  //   }
+  // );
 
   //
   controls.enableDamping = true;
@@ -36,7 +37,7 @@ export const effect = async (node) => {
 
   AvatarHead.getWorldPosition(controls.target);
   camera.position.y = controls.target.y + 0.12;
-  camera.position.z = controls.target.z + 3.5;
+  camera.position.z = controls.target.z + 2.5;
 
   controls.enabled = false;
 
@@ -47,7 +48,6 @@ export const effect = async (node) => {
     }
 
     AvatarHead.getWorldPosition(controlTarget);
-
     controls.target.lerp(controlTarget, 0.05);
     controls.update();
   });
@@ -61,6 +61,7 @@ export const effect = async (node) => {
   camera.near = 0.01;
   camera.far = 100000;
   camera.updateProjectionMatrix();
+  scene.add(camera);
 
   node.env.set("CameraAdjusted", true);
 };
