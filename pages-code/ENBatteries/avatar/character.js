@@ -84,7 +84,7 @@ export const effect = async (node) => {
   fbx.waveHand = await download(FBXLoader, grettingsURL);
 
   let model = gltf.scene;
-  model.scale.set(1.0, 1.0, 1.0);
+  model.scale.set(1, 1, 1);
   model.traverse((item) => {
     //
     if (item && item.geometry) {
@@ -141,34 +141,58 @@ export const effect = async (node) => {
   let waveHand = mixer.clipAction(fbx.waveHand.animations[0], model);
   waveHand.play();
   let last = waveHand;
+  let idx = 0;
   let acts = [
-    "/actions/greetings/backflip.fbx",
-    "/actions/greetings/bow-informal.fbx",
-    "/actions/greetings/hiphop.fbx",
-    "/actions/greetings/hiphop2.fbx",
-    "/actions/greetings/salute.fbx",
-    "/actions/greetings/warmup.fbx",
-    "/actions/greetings/singing.fbx",
-    "/actions/greetings/waving-1.fbx",
-    "/actions/greetings/waving-2.fbx",
-    "/actions/greetings/waving-3.fbx",
-    "/actions/greetings/waving-4.fbx",
+    { msg: `Let me do a backflip!`, fbx: "/actions/greetings/backflip.fbx" },
+    // { msg: `Welcome dear!`, fbx: "/actions/greetings/bow-informal.fbx" },
+    {
+      msg: `EffectNode can make avatar dance too.`,
+      fbx: "/actions/greetings/hiphop.fbx",
+    },
+    // {
+    //   msg: `EffectNode can make more dance moves.`,
+    //   fbx: "/actions/greetings/hiphop2.fbx",
+    // },
+    // {
+    //   msg: `EffectNode respects your vision.`,
+    //   fbx: "/actions/greetings/salute.fbx",
+    // },
+    {
+      msg: `EffectNode is battle tested, ready for production.`,
+      fbx: "/actions/greetings/warmup.fbx",
+    },
+    {
+      msg: `EffectNode is working on face capture for avatars.`,
+      fbx: "/actions/greetings/singing.fbx",
+    },
+    // { msg: `Hi!`, fbx: "/actions/greetings/waving-1.fbx" },
+    // { msg: `Hello`, fbx: "/actions/greetings/waving-2.fbx" },
+    // { msg: `Welcome!`, fbx: "/actions/greetings/waving-3.fbx" },
+    { msg: `Thank you for coming.`, fbx: "/actions/greetings/waving-4.fbx" },
   ];
 
-  node.events.on("click-logo", () => {
-    download(FBXLoader, acts[Math.floor(acts.length * Math.random())]).then(
-      (fbx) => {
-        let action = mixer.clipAction(fbx.animations[0], model);
-        requestAnimationFrame(() => {
-          if (last) {
-            last.fadeOut(0.5);
-          }
-          action.reset();
-          action.play();
-          last = action;
-        });
-      }
-    );
+  node.events.on("click-logo", (ev) => {
+    let act = acts[idx % acts.length];
+
+    let actURL = act.fbx;
+    if (ev && ev.type === "ring") {
+      actURL = "/actions/greetings/salute.fbx";
+    } else {
+      node.events.emit("cta-text", { text: act.msg });
+      idx++;
+    }
+
+    download(FBXLoader, actURL).then((fbx) => {
+      let action = mixer.clipAction(fbx.animations[0], model);
+      requestAnimationFrame(() => {
+        if (last) {
+          last.fadeOut(0.5);
+        }
+        action.reset();
+        action.play();
+        last = action;
+      });
+    });
   });
 
   // Share avatar

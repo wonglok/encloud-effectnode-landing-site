@@ -1,4 +1,3 @@
-import { AdditiveBlending, SubtractiveBlending } from "three";
 import {
   Color,
   CylinderBufferGeometry,
@@ -10,11 +9,23 @@ import {
 import { FolderName } from ".";
 import { enableBloom } from "../../Bloomer/Bloomer";
 import { download } from "../../Utils";
+import { InteractionManager } from "three.interactive";
 
 export const title = FolderName + ".ring";
 
 export const effect = async (node) => {
   let AvatarHips = await node.ready.AvatarHips;
+  let camera = await node.ready.camera;
+  let renderer = await node.ready.gl;
+
+  const interactionManager = new InteractionManager(
+    renderer,
+    camera,
+    renderer.domElement
+  );
+  node.onLoop(() => {
+    interactionManager.update();
+  });
 
   let scale = 0.25;
   let ring = new CylinderBufferGeometry(
@@ -49,6 +60,20 @@ export const effect = async (node) => {
 
   let mesh = new Mesh(ring, mat);
   enableBloom(mesh);
+
+  interactionManager.add(mesh);
+  node.onClean(() => {
+    interactionManager.remove(mesh);
+  });
+
+  mesh.addEventListener("mouseover", (event) => {
+    document.body.style.cursor = "pointer";
+    node.events.emit("click-logo", { type: "ring" });
+    node.events.emit("cta-text", { type: "ring" });
+  });
+  mesh.addEventListener("mouseout", (event) => {
+    document.body.style.cursor = "";
+  });
 
   node.onLoop((et, dt) => {
     mesh.rotation.y += dt;

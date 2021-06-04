@@ -3,7 +3,6 @@ import { DoubleSide, Sprite, SpriteMaterial, TextureLoader } from "three";
 import { download } from "../../Utils";
 import { enableBloom } from "../../Bloomer/Bloomer";
 import { InteractionManager } from "three.interactive";
-import { ConvolutionShader } from "three-stdlib";
 
 export const title = FolderName + ".welcome";
 
@@ -15,15 +14,16 @@ class LokLokSprite {
   async setup({ node }) {
     let camera = await node.ready.camera;
     let renderer = await node.ready.gl;
-    let raycaster = await node.ready.raycaster;
     let viewport = await node.ready.viewport;
-    let mouse = await node.ready.mouse;
 
     const interactionManager = new InteractionManager(
       renderer,
       camera,
       renderer.domElement
     );
+    node.onLoop(() => {
+      interactionManager.update();
+    });
 
     let texture = await download(TextureLoader, "/texture/en2-white.png");
     const material = new SpriteMaterial({
@@ -42,7 +42,6 @@ class LokLokSprite {
     sprite.center.set(0, 1);
 
     node.onLoop(() => {
-      interactionManager.update();
       let vp = viewport.getCurrentViewport();
       let vmax = Math.max(vp.width, vp.height);
       if (vmax >= 5) {
@@ -62,7 +61,7 @@ class LokLokSprite {
     sprite.frustumCulled = false;
 
     sprite.addEventListener("click", () => {
-      node.events.emit("click-logo");
+      node.events.emit("click-logo", { type: "logo" });
     });
 
     sprite.addEventListener("mouseover", () => {
