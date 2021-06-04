@@ -158,7 +158,7 @@ let isFunction = function (obj) {
   return typeof obj === "function" || false;
 };
 
-class EventEmitter {
+export class EventEmitter {
   constructor() {
     this.listeners = new Map();
   }
@@ -353,7 +353,6 @@ export class LambdaClient extends EventEmitter {
   }
 }
 
-
 export const ProviderCache = new Map();
 export const provideURL = (Loader, url) =>
   new Promise((resolve) => {
@@ -379,7 +378,6 @@ export const sleep = (t) => {
     setTimeout(resolve, t);
   });
 };
-
 
 // export const makeReceiverPeer = ({ url }) => {
 //   let socket = new LambdaClient({

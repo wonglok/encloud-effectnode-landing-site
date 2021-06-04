@@ -62,7 +62,7 @@ class LokLokSprite {
     sprite.frustumCulled = false;
 
     sprite.addEventListener("click", () => {
-      window.dispatchEvent(new CustomEvent("click-logo"));
+      node.events.emit("click-logo");
     });
 
     sprite.addEventListener("mouseover", () => {

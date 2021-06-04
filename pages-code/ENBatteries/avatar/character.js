@@ -144,17 +144,18 @@ export const effect = async (node) => {
   let acts = [
     "/actions/greetings/backflip.fbx",
     "/actions/greetings/bow-informal.fbx",
+    "/actions/greetings/hiphop.fbx",
     "/actions/greetings/hiphop2.fbx",
     "/actions/greetings/salute.fbx",
-    "/actions/greetings/waving-3.fbx",
     "/actions/greetings/warmup.fbx",
     "/actions/greetings/singing.fbx",
     "/actions/greetings/waving-1.fbx",
     "/actions/greetings/waving-2.fbx",
+    "/actions/greetings/waving-3.fbx",
     "/actions/greetings/waving-4.fbx",
   ];
 
-  window.addEventListener("click-logo", () => {
+  node.events.on("click-logo", () => {
     download(FBXLoader, acts[Math.floor(acts.length * Math.random())]).then(
       (fbx) => {
         let action = mixer.clipAction(fbx.animations[0], model);

@@ -1,6 +1,6 @@
 import { ENCloud } from "./ENCloud";
 import { ENMini } from "./ENMini";
-import { getID } from "./ENUtils";
+import { getID, EventEmitter } from "./ENUtils";
 
 export { BASEURL_REST, BASEURL_WS } from "./ENCloud";
 
@@ -21,6 +21,24 @@ export class ENRuntime {
       mini: this.mini,
       parent: this,
     });
+
+    this.events = new EventEmitter();
+
+    this.events.on = (ev, fnc) => {
+      emitter.addEventListener(ev, fnc);
+      runtime.mini.onClean(() => {
+        emitter.removeEventListener(ev, fnc);
+      });
+    };
+
+    this.events.off = (ev, fnc) => {
+      return emitter.removeEventListener(ev, fnc);
+    };
+
+    this.events.emit = (ev, data) => {
+      return emitter.trigger(ev, data);
+    };
+
     this.projectJSON = false;
     this.autoStartLoop = autoStartLoop;
     this.enBatteries = enBatteries;
@@ -344,6 +362,20 @@ export class CodeRuntime {
           env: {
             get: runtime.mini.get,
             set: runtime.mini.set,
+          },
+          events: {
+            on: (ev, fnc) => {
+              this.parent.events.addEventListener(ev, fnc);
+              runtime.mini.onClean(() => {
+                this.parent.events.removeEventListener(ev, fnc);
+              });
+            },
+            off: (ev, fnc) => {
+              return this.parent.events.removeEventListener(ev, fnc);
+            },
+            emit: (ev, data) => {
+              return this.parent.events.trigger(ev, data);
+            },
           },
           runtime: runtime,
           graphEngine: runtime.mini,
