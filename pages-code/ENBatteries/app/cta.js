@@ -28,9 +28,6 @@ export const effect = async (node) => {
   welcome.text = "Hi! Welcome to EffectNode.";
 
   node.events.on("cta-text", (v) => {
-    if (v?.type === "ring") {
-      welcome.text = `The endless loop repesent our dedication in research for EffectNode.`;
-    }
     if (v?.text) {
       welcome.text = v?.text;
     }
@@ -43,7 +40,7 @@ export const effect = async (node) => {
   welcome.textAlign = "center";
   welcome.anchorX = "center";
   welcome.anchorY = "bottom";
-  welcome.maxWidth = 4;
+  welcome.maxWidth = 3.5;
   welcome.fontSize = 0.2;
   welcome.font =
     "https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff";

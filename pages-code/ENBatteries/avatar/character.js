@@ -145,6 +145,14 @@ export const effect = async (node) => {
   let acts = [
     { msg: `Welcome to Effect Node!`, fbx: "/actions/greetings/waving-1.fbx" },
     { msg: `Let me do a backflip!`, fbx: "/actions/greetings/backflip.fbx" },
+    {
+      msg: `The ring represent \nour dedication in research\n for effect node`,
+      fbx: "/actions/greetings/salute.fbx",
+    },
+    {
+      msg: `The ring represent \nour dedication in research\n for effect node`,
+      fbx: "/actions/greetings/salute.fbx",
+    },
     // {
     //   msg: `EffectNode can make avatar dance too.`,
     //   fbx: "/actions/greetings/hiphop.fbx",
@@ -159,10 +167,6 @@ export const effect = async (node) => {
     // },
 
     {
-      msg: `The ring represent our dedication in research for effect node`,
-      fbx: "/actions/greetings/salute.fbx",
-    },
-    {
       msg: `Effect Node is Battle tested,\n ready for production.`,
       fbx: "/actions/greetings/warmup.fbx",
     },
@@ -170,6 +174,7 @@ export const effect = async (node) => {
       msg: `EffectNode is working on face capture for avatars.`,
       fbx: "/actions/greetings/singing.fbx",
     },
+
     { msg: `Thank you!`, fbx: "/actions/greetings/bow-informal.fbx" },
 
     // { msg: `Hi!`, fbx: "/actions/greetings/waving-1.fbx" },
@@ -196,9 +201,10 @@ export const effect = async (node) => {
       action.play();
       last = action;
       clearTimeout(timer);
+      let duration = action.getClip().duration;
       timer = setTimeout(() => {
         node.events.emit("click-logo", {});
-      }, action.getClip().duration * 1000);
+      }, duration * 1000);
     });
   });
 

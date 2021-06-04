@@ -37,7 +37,7 @@ export const effect = async (node) => {
 
   AvatarHead.getWorldPosition(controls.target);
   camera.position.y = controls.target.y + 0.12;
-  camera.position.z = controls.target.z + 2.5;
+  camera.position.z = controls.target.z + 3;
 
   controls.enabled = false;
 

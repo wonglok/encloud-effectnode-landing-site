@@ -4,7 +4,7 @@ import { download } from "../../Utils";
 import { enableBloom } from "../../Bloomer/Bloomer";
 import { InteractionManager } from "three.interactive";
 
-export const title = FolderName + ".welcome";
+export const title = FolderName + ".logo";
 
 class LokLokSprite {
   constructor({ node }) {
@@ -25,12 +25,15 @@ class LokLokSprite {
       interactionManager.update();
     });
 
+    let RainbowEnvMap = await node.ready.RainbowEnvMap;
+
     let texture = await download(TextureLoader, "/texture/en2-white.png");
     const material = new SpriteMaterial({
       map: texture,
       side: DoubleSide,
       depthTest: false,
       transparent: true,
+      envMap: RainbowEnvMap,
       opacity: 0.7,
     });
 
