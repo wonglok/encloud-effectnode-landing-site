@@ -1,12 +1,14 @@
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, createPortal, useThree } from "@react-three/fiber";
 import Head from "next/head";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ENRuntime, BASEURL_REST } from "../pages-code/ENCloudSDK/ENRuntime";
 import { EnvMap } from "../pages-code/EnvMap/EnvMap";
 import { Bloomer } from "../pages-code/Bloomer/Bloomer";
 import { download } from "../pages-code/Utils";
 import { FBXLoader } from "three-stdlib";
 import { TextureLoader } from "three";
+import { Acts } from "../pages-code/ENBatteries/avatar/character";
+import { Text } from "@react-three/drei";
 
 // import { VDBLoader } from "../pages-code/VDBLoader/VDBLoader";
 
@@ -62,7 +64,7 @@ let loadBattriesInFolder = () => {
 
 function EffectNode({ myScene, projectJSON }) {
   let three = useThree();
-
+  let [loading, setLoading] = useState(0);
   useEffect(() => {
     let vips = {
       "?vip=susaye": {
@@ -168,26 +170,43 @@ function EffectNode({ myScene, projectJSON }) {
     });
 
     const preload = (afterwards) => {
-      download(FBXLoader, "/map/spaceship-walk.fbx").then(afterwards);
-      download(TextureLoader, "/matcap/silver.png").then(afterwards);
-      download(TextureLoader, "/texture/eNeNeN-white.png").then(afterwards);
+      download(FBXLoader, "/map/spaceship-walk.fbx").then(afterwards());
+      download(TextureLoader, "/matcap/silver.png").then(afterwards());
+      download(TextureLoader, "/texture/eNeNeN-white.png").then(afterwards());
+
+      Acts.forEach((item) => {
+        download(FBXLoader, item.fbx).then(afterwards());
+      });
     };
 
     let i = 0;
-    let tt = 3;
+    let tt = 0;
     preload(() => {
-      i++;
-      if (i === tt) {
-        enRunTime.mini.set("PreloadDone", true);
-      }
+      tt++;
+      return () => {
+        i++;
+
+        setLoading(i / tt);
+        if (i === tt) {
+          enRunTime.mini.set("PreloadDone", true);
+        }
+      };
     });
 
+    three.scene.add(three.camera);
+
     return () => {
+      three.scene.remove(three.camera);
       enRunTime.mini.clean();
     };
   }, []);
 
-  return <group></group>;
+  return createPortal(
+    <group visible={loading < 1} position-z={-10}>
+      <Text>{(loading * 100).toFixed(1)}%</Text>
+    </group>,
+    three.camera
+  );
 }
 
 export async function getStaticProps(context) {

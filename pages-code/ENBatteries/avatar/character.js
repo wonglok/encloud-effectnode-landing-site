@@ -7,6 +7,62 @@ import { download } from "../../Utils";
 
 export const title = FolderName + ".character";
 
+export const Acts = [
+  { msg: `Welcome to Effect Node.`, fbx: "/actions/greetings/waving-1.fbx" },
+  {
+    msg: `Let me do a backflip!`,
+    fbx: "/actions/greetings/backflip.fbx",
+  },
+
+  // {
+  //   msg: `Hiphop`,
+  //   fbx: "/actions/greetings/hiphop.fbx",
+  // },
+
+  {
+    msg: `The loop ring represent \nour dedication for vfx on web.`,
+    fbx: "/actions/greetings/salute.fbx",
+  },
+  {
+    msg: `The loop ring represent \nour dedication for vfx on web.`,
+    fbx: "/actions/greetings/salute.fbx",
+  },
+
+  {
+    msg: `You can unleash your coding potential with effect node.`,
+    fbx: "/actions/greetings/magic-2h-expo.fbx",
+    emit: "ring-expand",
+  },
+
+  // {
+  //   msg: `EffectNode can make avatar dance too.`,
+  //   fbx: "/actions/greetings/hiphop.fbx",
+  // },
+  // {
+  //   msg: `EffectNode can make more dance moves.`,
+  //   fbx: "/actions/greetings/hiphop2.fbx",
+  // },
+  // {
+  //   msg: `EffectNode respects your vision.`,
+  //   fbx: "/actions/greetings/salute.fbx",
+  // },
+
+  {
+    msg: `Effect Node is Battle tested,\n ready for production.`,
+    fbx: "/actions/greetings/warmup.fbx",
+  },
+  {
+    msg: `EffectNode is working on face capture for avatars.`,
+    fbx: "/actions/greetings/singing.fbx",
+  },
+
+  { msg: `Thank you!`, fbx: "/actions/greetings/bow-informal.fbx" },
+
+  // { msg: `Hello`, fbx: "/actions/greetings/waving-2.fbx" },
+  // { msg: `Welcome!`, fbx: "/actions/greetings/waving-3.fbx" },
+  // { msg: `Thank you for coming.`, fbx: "/actions/greetings/waving-4.fbx" },
+];
+
 let playFaceData = ({ onFrame = () => {}, loop = false }) => {
   new FileLoader().load("/facedata/eye.json-line", (file) => {
     let data = [];
@@ -145,54 +201,8 @@ export const effect = async (node) => {
   // waveHand.play();
   let last = false;
   let idx = 0;
-  let acts = [
-    { msg: `Welcome to Effect Node.`, fbx: "/actions/greetings/waving-1.fbx" },
-    {
-      msg: `Let me do a backflip!`,
-      fbx: "/actions/greetings/backflip.fbx",
-    },
-    {
-      msg: `The loop ring represent \nour dedication for vfx on web.`,
-      fbx: "/actions/greetings/salute.fbx",
-    },
-    {
-      msg: `The loop ring represent \nour dedication for vfx on web.`,
-      fbx: "/actions/greetings/salute.fbx",
-    },
-    {
-      msg: `You can unleash your coding potential with effect node.`,
-      fbx: "/actions/greetings/magic-2h-expo.fbx",
-      emit: "ring-expand",
-    },
-
-    // {
-    //   msg: `EffectNode can make avatar dance too.`,
-    //   fbx: "/actions/greetings/hiphop.fbx",
-    // },
-    // {
-    //   msg: `EffectNode can make more dance moves.`,
-    //   fbx: "/actions/greetings/hiphop2.fbx",
-    // },
-    // {
-    //   msg: `EffectNode respects your vision.`,
-    //   fbx: "/actions/greetings/salute.fbx",
-    // },
-
-    {
-      msg: `Effect Node is Battle tested,\n ready for production.`,
-      fbx: "/actions/greetings/warmup.fbx",
-    },
-    {
-      msg: `EffectNode is working on face capture for avatars.`,
-      fbx: "/actions/greetings/singing.fbx",
-    },
-
-    { msg: `Thank you!`, fbx: "/actions/greetings/bow-informal.fbx" },
-
-    // { msg: `Hello`, fbx: "/actions/greetings/waving-2.fbx" },
-    // { msg: `Welcome!`, fbx: "/actions/greetings/waving-3.fbx" },
-    // { msg: `Thank you for coming.`, fbx: "/actions/greetings/waving-4.fbx" },
-  ];
+  let acts = Acts;
+  download(FBXLoader, Acts[0].fbx);
 
   let timer = 0;
 
@@ -237,6 +247,7 @@ export const effect = async (node) => {
   model.traverse((item) => {
     if (item.isBone) {
       node.env.set("Ava" + item.name, item);
+      console.log("Ava" + item.name);
     }
   });
 

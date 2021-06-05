@@ -46,6 +46,8 @@ export function Bloomer({ myScene = false }) {
     bloomComposer.renderToScreen = false;
     let sizeV2 = new Vector2(window.innerWidth, window.innerHeight);
 
+    gl.getSize(sizeV2);
+
     let {
       RenderPass,
     } = require("three/examples/jsm/postprocessing/RenderPass");
