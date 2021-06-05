@@ -712,18 +712,18 @@ export class WiggleTracker {
 
     let trackers = [];
 
-    for (let i = 0; i < sim.HEIGHT; i++) {
-      if (i % 2 === 0) {
-        let pp = trackO3D(await node.ready.AvaRightHandPinky4);
-        trackers.push(pp);
-      } else {
-        let pp = trackO3D(await node.ready.AvaLeftHandPinky4);
-        trackers.push(pp);
-      }
-    }
-    //
+    let lhi = trackO3D(await node.ready.AvaLeftHandIndex4);
+    trackers.push(lhi);
 
-    //
+    let rhi = trackO3D(await node.ready.AvaRightHandIndex4);
+    trackers.push(rhi);
+
+    for (let i = 0; i < sim.HEIGHT - 2; i++) {
+      let pp = trackO3D(
+        makeOrbitor(node, 0.3 + i * 0.1, await node.ready.AvaHips)
+      );
+      trackers.push(pp);
+    }
 
     node.onLoop(() => {
       sim.render({
