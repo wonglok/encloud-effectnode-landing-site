@@ -69,7 +69,9 @@ export const effect = async (node) => {
 
   let fbx = {};
 
+  // let avatarURL = "/ppl/lok-white-armor.glb";
   let avatarURL = "/ppl/lok-white-armor.glb";
+
   if (node.userData.customAvatarURL) {
     avatarURL = await node.userData.customAvatarURL;
   }
@@ -81,6 +83,7 @@ export const effect = async (node) => {
   if (node.userData.greetingsActionURL) {
     grettingsURL = node.userData.greetingsActionURL;
   }
+
   fbx.waveHand = await download(FBXLoader, grettingsURL);
 
   let model = gltf.scene;
@@ -219,6 +222,8 @@ export const effect = async (node) => {
     });
   });
 
+  //lok-street-wear
+
   node.events.emit("click-logo", {});
 
   // Share avatar
@@ -230,9 +235,11 @@ export const effect = async (node) => {
   node.env.set("AvatarHips", Hips);
 
   model.traverse((item) => {
-    console.log(item.name);
+    if (item.isBone) {
+      node.env.set("Ava" + item.name, item);
+    }
   });
-  //
+
   let RightHand = model.getObjectByName("RightHand");
   node.env.set("AvaRightHand", RightHand);
 

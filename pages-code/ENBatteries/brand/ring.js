@@ -95,6 +95,9 @@ export const effect = async (node) => {
     //     duration: 2000,
     //   }).finished;
     // });
+
+    //
+
     let active = true;
 
     let left = new Vector3();
@@ -137,3 +140,7 @@ export const effect = async (node) => {
     AvatarHips.remove(mesh);
   });
 };
+
+//
+
+//
