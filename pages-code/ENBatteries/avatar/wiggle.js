@@ -324,7 +324,7 @@ class LokLokWiggleDisplay {
         attribute float newPosition;
         attribute float tubeInfo;
 
-        varying vec2 vUv;
+        // varying vec2 vUv;
         varying vec3 vNormal;
         attribute vec4 offset;
 
@@ -426,7 +426,7 @@ class LokLokWiggleDisplay {
           vec3 transformedNormal = normalMatrix * objectNormal;
           vNormal = normalize(transformedNormal);
 
-          vUv = uv.yx;
+          // vUv = uv.yx;
 
           vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
           gl_Position = projectionMatrix * mvPosition;
@@ -435,7 +435,7 @@ class LokLokWiggleDisplay {
       `,
       fragmentShader: /* glsl */ `
         varying float vT;
-        varying vec2 vUv;
+        // varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vViewPosition;
         uniform sampler2D matcap;
