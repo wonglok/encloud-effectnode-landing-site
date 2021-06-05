@@ -244,12 +244,15 @@ export const effect = async (node) => {
   let Hips = model.getObjectByName("Hips");
   node.env.set("AvatarHips", Hips);
 
+  let bones = [];
   model.traverse((item) => {
     if (item.isBone) {
+      bones.push(item);
       node.env.set("Ava" + item.name, item);
-      console.log("Ava" + item.name);
+      // console.log("Ava" + item.name);
     }
   });
+  node.env.set("Ava" + "Bones", bones);
 
   let RightHand = model.getObjectByName("RightHand");
   node.env.set("AvaRightHand", RightHand);

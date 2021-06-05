@@ -89,9 +89,13 @@ export function Bloomer({ myScene = false }) {
     let {
       ShaderPass,
     } = require("three/examples/jsm/postprocessing/ShaderPass.js");
+
+    //
+
     // let bloomTexture = {
     //   value: bloomComposer.renderTarget2.texture,
     // };
+
     const finalPass = new ShaderPass(
       new ShaderMaterial({
         uniforms: {
@@ -130,13 +134,17 @@ export function Bloomer({ myScene = false }) {
       "resize",
       () => {
         let dpr = gl.getPixelRatio();
+        let bloomDPR = dpr * 0.5;
+        if (bloomDPR <= 1) {
+          bloomDPR = 1;
+        }
 
         gl.getSize(sizeV2);
         // sizeV2.multiplyScalar(dpr);
         bloomComposer.setSize(sizeV2.x, sizeV2.y);
         finalComposer.setSize(sizeV2.x, sizeV2.y);
 
-        bloomComposer.setPixelRatio(dpr);
+        bloomComposer.setPixelRatio(bloomDPR);
         finalComposer.setPixelRatio(dpr);
       },
       false

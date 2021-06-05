@@ -20,14 +20,15 @@ import {
   Object3D,
 } from "three";
 import { Geometry } from "three/examples/jsm/deprecated/Geometry.js";
+import { enableBloom } from "../../Bloomer/Bloomer";
 
 export const title = FolderName + ".wiggle";
 
 class LokLokWiggleSimulation {
-  constructor({ node, trailSize = 32 }) {
+  constructor({ node, numberOfScans = 10, trailSize = 32 }) {
     this.node = node;
     this.WIDTH = trailSize;
-    this.HEIGHT = 10; // number of trackers
+    this.HEIGHT = numberOfScans; // number of trackers
     this.COUNT = this.WIDTH * this.HEIGHT;
     this.wait = this.setup({ node });
     this.v3v000 = new Vector3(0, 0, 0);
@@ -302,14 +303,16 @@ class LokLokWiggleDisplay {
             textureName: "posTexture",
           }) + "\n";
       }
-
       return str;
     };
 
     let matLine0 = new ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        matcap: { value: new TextureLoader().load("/matcap/golden2.png") },
+        matcap: {
+          // value: new TextureLoader().load("/matcap/golden2.png"),
+          value: await node.ready.RainbowTexture,
+        },
         posTexture: { value: null },
         // handTexture: { value: null },
       },
@@ -445,13 +448,16 @@ class LokLokWiggleDisplay {
 
           vec4 matcapColor = texture2D( matcap, uv );
 
-          gl_FragColor = vec4(matcapColor.rgb + 0.5, (1.0 - vT) * (1.0 - vT));
+          gl_FragColor = vec4(matcapColor.rgb, (1.0 - vT));
         }
       `,
       transparent: true,
     });
 
     let line0 = new Mesh(geometry, matLine0);
+
+    enableBloom(line0);
+
     scene.add(line0);
     node.onClean(() => {
       scene.remove(line0);
@@ -698,7 +704,15 @@ export class WiggleTracker {
     this.setup({ node });
   }
   async setup({ node }) {
-    let sim = new LokLokWiggleSimulation({ node, trailSize: 64 });
+    // let AvaBones = await node.ready.AvaBones;
+
+    let SCANABLE = 10; // + AvaBones.length;
+    let SCAN_LENGTH = 64;
+    let sim = new LokLokWiggleSimulation({
+      node,
+      numberOfScans: SCANABLE,
+      trailSize: SCAN_LENGTH,
+    });
 
     let display = new LokLokWiggleDisplay({ node, sim });
 
@@ -718,12 +732,18 @@ export class WiggleTracker {
     let rhi = trackO3D(await node.ready.AvaRightHandIndex4);
     trackers.push(rhi);
 
-    for (let i = 0; i < sim.HEIGHT - 2; i++) {
+    for (let i = 0; i < 8; i++) {
       let pp = trackO3D(
-        makeOrbitor(node, 0.3 + i * 0.1, await node.ready.AvaHips)
+        makeOrbitor(node, 0.4 + i * 0.1, await node.ready.AvaHips)
       );
       trackers.push(pp);
     }
+
+    // trackers.push(
+    //   ...AvaBones.map((b) => {
+    //     return trackO3D(b);
+    //   })
+    // );
 
     node.onLoop(() => {
       sim.render({

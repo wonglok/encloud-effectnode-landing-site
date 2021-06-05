@@ -43,8 +43,29 @@ export class ENRuntime {
     this.autoStartLoop = autoStartLoop;
     this.enBatteries = enBatteries;
     this.userData = userData;
+    this.runtimes = [];
     this.promise = this.setup();
+    this.ready = new Proxy(this, {
+      get: (obj, key) => {
+        return this.getRuntime().then((run) => {
+          return run.mini.get(key);
+        });
+      },
+    });
   }
+
+  getRuntime() {
+    return new Promise((resolve) => {
+      let tt = setInterval(() => {
+        let val = this.runtimes[this.runtimes.length - 1];
+        if (val) {
+          clearInterval(tt);
+          resolve(val);
+        }
+      }, 0);
+    });
+  }
+
   async setup() {
     //
     this.projectJSON = await this.encloud.waitForTruth();
@@ -53,7 +74,8 @@ export class ENRuntime {
     let activeListener = new Map();
 
     //
-    let runtimes = [];
+    let runtimes = this.runtimes;
+
     let Signatures = {
       now: "now",
       last: "last",

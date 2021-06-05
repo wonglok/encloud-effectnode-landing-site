@@ -65,6 +65,7 @@ let loadBattriesInFolder = () => {
 function EffectNode({ myScene, projectJSON }) {
   let three = useThree();
   let [loading, setLoading] = useState(0);
+
   useEffect(() => {
     let vips = {
       "?vip=susaye": {
@@ -195,6 +196,11 @@ function EffectNode({ myScene, projectJSON }) {
 
     three.scene.add(three.camera);
 
+    enRunTime.ready.SceneDisplayed.then(() => {
+      setLoading(false);
+      console.log("Loader is hidden");
+    });
+
     return () => {
       three.scene.remove(three.camera);
       enRunTime.mini.clean();
@@ -202,8 +208,10 @@ function EffectNode({ myScene, projectJSON }) {
   }, []);
 
   return createPortal(
-    <group visible={loading < 1} position-z={-10}>
-      <Text>{(loading * 100).toFixed(1)}%</Text>
+    <group position-z={-4}>
+      <group visible={typeof loading === "number"}>
+        <Text>{(loading * 100).toFixed(1)}%</Text>
+      </group>
     </group>,
     three.camera
   );

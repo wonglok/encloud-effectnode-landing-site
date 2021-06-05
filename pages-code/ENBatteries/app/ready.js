@@ -38,6 +38,7 @@ export const effect = async (node) => {
     })
     .then(() => {
       o3d.visible = true;
+      node.env.set("SceneDisplayed", true);
     });
 };
 
