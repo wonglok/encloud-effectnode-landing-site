@@ -734,7 +734,7 @@ export class WiggleTracker {
     this.setup({ node });
   }
   async setup({ node }) {
-    let SCAN_COUNT = 10;
+    let SCAN_COUNT = 8;
     let TAIL_LENGTH = 64;
 
     //

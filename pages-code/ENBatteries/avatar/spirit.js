@@ -17,6 +17,7 @@ import {
   PlaneBufferGeometry,
   MeshBasicMaterial,
   AdditiveBlending,
+  Object3D,
 } from "three";
 import { Geometry } from "three/examples/jsm/deprecated/Geometry.js";
 import { enableBloom } from "../../Bloomer/Bloomer";
@@ -66,6 +67,54 @@ export const title = FolderName + ".spirit";
 //   }
 // }
 
+let makeNodeOrbitor = (node, mounter, radius = 1) => {
+  let orbit = new Object3D();
+  if (mounter) {
+    mounter.add(orbit);
+    node.onClean(() => {
+      mounter.remove(orbit);
+    });
+  }
+
+  node.onLoop((dt) => {
+    orbit.rotation.y += 0.05;
+  });
+
+  let orbiting1 = new Object3D();
+  orbiting1.position.y = 0.15;
+  orbiting1.position.x = radius;
+  orbit.add(orbiting1);
+
+  let left = new Vector3();
+  let right = new Vector3();
+  let dist = 2.5700293285455326;
+  let v3 = new Vector3();
+  Promise.all([
+    //
+    node.ready.AvaLeftHand,
+    node.ready.AvaRightHand,
+  ]).then(
+    ([
+      //
+      AvaLeftHand,
+      AvaRightHand,
+    ]) => {
+      node.onLoop(() => {
+        AvaLeftHand.getWorldPosition(left);
+        AvaRightHand.getWorldPosition(right);
+
+        let dist2 = left.distanceTo(right);
+
+        let s = dist2 / dist;
+        v3.set(s * s * 10 + 0.5, 1, 1);
+        orbit.scale.lerp(v3, 1);
+      });
+    }
+  );
+
+  return orbiting1;
+};
+
 export class LokLokGravitySimulation {
   constructor({ node, width, height }) {
     this.WIDTH = width;
@@ -82,10 +131,12 @@ export class LokLokGravitySimulation {
     //
     let mouse = new Vector3();
     let TrackerTarget = await node.ready.AvaHead;
-    TrackerTarget.getWorldPosition(mouse);
+    let orbitTracker = makeNodeOrbitor(node, TrackerTarget, 1.0);
+
+    orbitTracker.getWorldPosition(mouse);
     mouse.y += 0.4;
     node.onLoop(() => {
-      TrackerTarget.getWorldPosition(mouse);
+      orbitTracker.getWorldPosition(mouse);
       mouse.y += 0.4;
     });
 
@@ -655,7 +706,7 @@ class LokLokWiggleDisplay {
 
           // vec4 matcapColor = texture2D( matcap, uv );
 
-          gl_FragColor = vec4(vec3(1.0, 0.8, 0.0), (1.0 - vT));
+          gl_FragColor = vec4(vec3(1.0, 0.8, 0.0), (1.0 - vT) * (1.0 - vT));
         }
       `,
       transparent: true,
@@ -869,7 +920,7 @@ export class WiggleTracker {
     let WIDTH = 1;
     let HEIGHT = 128;
     let SCAN_COUNT = WIDTH * HEIGHT;
-    let TAIL_LENGTH = 4;
+    let TAIL_LENGTH = 32;
 
     let virtual = new LokLokGravitySimulation({
       node: node,
