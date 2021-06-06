@@ -16,13 +16,55 @@ import {
   RGBFormat,
   PlaneBufferGeometry,
   MeshBasicMaterial,
-  Object3D,
   AdditiveBlending,
 } from "three";
 import { Geometry } from "three/examples/jsm/deprecated/Geometry.js";
 import { enableBloom } from "../../Bloomer/Bloomer";
 
 export const title = FolderName + ".spirit";
+
+class UI {
+  static async hoverPlane(node) {
+    let raycaster = await node.ready.raycaster;
+    let mouse = await node.ready.mouse;
+    let camera = await node.ready.camera;
+    let scene = await node.ready.scene;
+    let viewport = await node.ready.viewport;
+
+    let geoPlane = new PlaneBufferGeometry(
+      3.0 * viewport.width,
+      3.0 * viewport.height,
+      2,
+      2
+    );
+
+    let matPlane = new MeshBasicMaterial({
+      transparent: true,
+      opacity: 0.25,
+      color: 0xff0000,
+    });
+
+    let planeMesh = new Mesh(geoPlane, matPlane);
+    planeMesh.position.z = -camera.position.z / 2;
+
+    scene.add(planeMesh);
+    node.onClean(() => {
+      scene.remove(planeMesh);
+    });
+
+    let temppos = new Vector3();
+    node.onLoop(() => {
+      planeMesh.lookAt(camera.position);
+      raycaster.setFromCamera(mouse, camera);
+      let res = raycaster.intersectObject(planeMesh);
+      if (res && res[0]) {
+        temppos.copy(res[0].point);
+      }
+    });
+
+    return temppos;
+  }
+}
 
 export class LokLokGravitySimulation {
   constructor({ node, width, height }) {
@@ -35,13 +77,17 @@ export class LokLokGravitySimulation {
   async setup() {
     let node = this.node;
     let renderer = await node.ready.gl;
-    let AvaLeftHand = await node.ready.AvaLeftHand;
-    let mouse = new Vector3();
-    AvaLeftHand.getWorldPosition(mouse);
 
+    // let mouse = await UI.hoverPlane(node);
+    //
+    let mouse = new Vector3();
+    let TrackerTarget = await node.ready.AvaRightHand;
+    TrackerTarget.getWorldPosition(mouse);
     node.onLoop(() => {
-      AvaLeftHand.getWorldPosition(mouse);
+      TrackerTarget.getWorldPosition(mouse);
     });
+
+    //
 
     this.gpu = new GPUComputationRenderer(this.WIDTH, this.HEIGHT, renderer);
     let gpu = this.gpu;
@@ -145,14 +191,17 @@ export class LokLokGravitySimulation {
       }
 
       vec3 getDiff (in vec3 lastPos, in vec3 mousePos) {
-        vec3 diff = lastPos.xyz - mousePos;
-        float distance = constrain(length(diff), 5.0, 100.0);
+        vec3 diff = lastPos - mousePos;
+        float distance = constrain(length(diff), 15.0, 100.0);
         float strength = 0.635 / (distance * distance);
 
-        diff = normalize(diff * 2.1);
+        diff = normalize(diff);
+
         // delta
         diff = diff * strength * -2.0;
+
         // diff = diff * strength * (-20.83) * (1.0 / delta) * 0.0183;
+        // diff = normalize(diff);
 
         return diff;
       }
@@ -261,6 +310,7 @@ class LokLokHairBallSimulation {
     this.v3v000 = new Vector3(0, 0, 0);
   }
   async setup({ node }) {
+    await this.virtual.wait;
     let renderer = await node.ready.gl;
 
     let gpu = (this.gpu = new GPUComputationRenderer(
@@ -376,8 +426,6 @@ class LokLokHairBallSimulation {
           vec3 positionChain = texture2D( texturePosition,nextUV ).xyz;
           gl_FragColor = vec4(positionChain, 1.0);
         }
-
-
 			}
     `;
   }
@@ -627,48 +675,12 @@ class LokLokWiggleDisplay {
       scene.remove(line0);
     });
 
+    await this.sim.wait;
+
     node.onLoop(() => {
       let result = this.sim.getTextureAfterCompute();
       matLine0.uniforms.posTexture.value = result.posTexture;
       matLine0.uniforms.time.value = window.performance.now() / 1000;
-    });
-  }
-
-  async enableMousePlane() {
-    let raycaster = await node.ready.raycaster;
-    let mouse = await node.ready.mouse;
-    let camera = await node.ready.camera;
-    let viewport = await node.ready.viewport;
-
-    let geoPlane = new PlaneBufferGeometry(
-      2.0 * viewport.width,
-      2.0 * viewport.height,
-      2,
-      2
-    );
-
-    let matPlane = new MeshBasicMaterial({
-      transparent: true,
-      opacity: 0.25,
-      color: 0xff0000,
-    });
-
-    let planeMesh = new Mesh(geoPlane, matPlane);
-    planeMesh.position.z = -camera.position.z / 2;
-
-    scene.add(planeMesh);
-    node.onClean(() => {
-      scene.remove(planeMesh);
-    });
-
-    let temppos = new Vector3();
-    node.onLoop(() => {
-      planeMesh.lookAt(camera.position);
-      raycaster.setFromCamera(mouse, camera);
-      let res = raycaster.intersectObject(planeMesh);
-      if (res && res[0]) {
-        temppos.copy(res[0].point);
-      }
     });
   }
 
@@ -845,12 +857,14 @@ class NoodleGeo {
 }
 
 export class WiggleTracker {
+  //
   constructor({ node }) {
     this.node = node;
     this.setup({ node });
   }
+
   async setup({ node }) {
-    let WIDTH = 128;
+    let WIDTH = 32;
     let HEIGHT = 128;
     let SCAN_COUNT = WIDTH * HEIGHT;
     let TAIL_LENGTH = 64;
@@ -860,8 +874,6 @@ export class WiggleTracker {
       width: WIDTH,
       height: HEIGHT,
     });
-
-    await virtual.wait;
 
     let sim = new LokLokHairBallSimulation({
       node,
