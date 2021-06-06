@@ -763,10 +763,10 @@ export class WiggleTracker {
     trackers.push(rhi);
 
     for (let i = 0; i < 8; i++) {
-      let pp = trackO3D(
-        makeOrbitor(node, 0.4 + i * 0.1, await node.ready.AvaHips)
-      );
-      trackers.push(pp);
+      // let pp = trackO3D(
+      //   makeOrbitor(node, 0.4 + i * 0.1, await node.ready.AvaHips)
+      // );
+      // trackers.push(pp);
     }
 
     node.onLoop(() => {
