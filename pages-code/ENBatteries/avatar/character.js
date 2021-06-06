@@ -259,7 +259,7 @@ export const effect = async (node) => {
 
   //
   let LefttHand = model.getObjectByName("LeftHand");
-  node.env.set("AvaLefttHand", LefttHand);
+  node.env.set("AvaLeftHand", LefttHand);
 
   //
   ReadyGroup.add(model);

@@ -18,7 +18,7 @@ export const title = FolderName + ".ring";
 export const effect = async (node) => {
   let AvatarHips = await node.ready.AvatarHips;
   let AvaRightHand = await node.ready.AvaRightHand;
-  let AvaLefttHand = await node.ready.AvaLefttHand;
+  let AvaLeftHand = await node.ready.AvaLeftHand;
   let camera = await node.ready.camera;
   let renderer = await node.ready.gl;
 
@@ -27,6 +27,7 @@ export const effect = async (node) => {
     camera,
     renderer.domElement
   );
+
   node.onLoop(() => {
     interactionManager.update();
   });
@@ -106,7 +107,7 @@ export const effect = async (node) => {
     let dist = 2.5700293285455326;
     node.onLoop(() => {
       if (active === true) {
-        AvaLefttHand.getWorldPosition(left);
+        AvaLeftHand.getWorldPosition(left);
         AvaRightHand.getWorldPosition(right);
 
         let dist2 = left.distanceTo(right);

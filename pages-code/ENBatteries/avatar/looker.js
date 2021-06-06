@@ -39,7 +39,7 @@ export const effect = async (node) => {
   camera.position.y = controls.target.y + 0.12;
   camera.position.z = controls.target.z + 3;
 
-  controls.enabled = false;
+  // controls.enabled = false;
 
   let controlTarget = new Vector3();
   node.onLoop(() => {
