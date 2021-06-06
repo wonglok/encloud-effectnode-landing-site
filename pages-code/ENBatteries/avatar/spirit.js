@@ -298,21 +298,14 @@ export class LokLokGravitySimulation {
 }
 
 class LokLokHairBallSimulation {
-  constructor({
-    node,
-    width,
-    height,
-    virtual,
-    numberOfScans = 10,
-    trailSize = 32,
-  }) {
+  constructor({ node, virtual, numberOfScans = 10, trailSize = 32 }) {
     this.node = node;
-    this.vWidth = width;
-    this.vHeight = height;
     this.virtual = virtual;
     this.WIDTH = trailSize;
-    this.HEIGHT = numberOfScans; // number of trackers
-    this.COUNT = this.WIDTH * this.HEIGHT;
+
+    this.HEIGHT = numberOfScans;
+    this.NUMBER_OF_SCANS = numberOfScans;
+
     this.wait = this.setup({ node });
     this.v3v000 = new Vector3(0, 0, 0);
   }
@@ -386,16 +379,18 @@ class LokLokHairBallSimulation {
 
     const tempArray = [];
 
-    for (let y = 0; y < this.vHeight; y++) {
-      for (let x = 0; x < this.vWidth; x++) {
-        tempArray.push([x / this.vWidth, y / this.vHeight]);
+    for (let x = 0; x < this.virtual.WIDTH; x++) {
+      for (let y = 0; y < this.virtual.HEIGHT; y++) {
+        tempArray.push([x / this.virtual.WIDTH, y / this.virtual.HEIGHT]);
       }
     }
 
-    for (let y = 0; y < this.HEIGHT; y++) {
+    for (let iii = 0; iii < this.NUMBER_OF_SCANS; iii++) {
       for (let x = 0; x < this.WIDTH; x++) {
-        theArray[k++] = tempArray[y][0];
-        theArray[k++] = tempArray[y][1];
+        let v = tempArray[iii];
+
+        theArray[k++] = v[0];
+        theArray[k++] = v[1];
         theArray[k++] = 0.0;
         theArray[k++] = 0.0;
       }
@@ -497,7 +492,7 @@ class LokLokWiggleDisplay {
     // let renderer = await node.ready.gl;
 
     let { geometry, subdivisions, count } = new NoodleGeo({
-      count: this.sim.HEIGHT,
+      count: this.sim.NUMBER_OF_SCANS,
       numSides: 3,
       subdivisions: this.sim.WIDTH,
       openEnded: false,
@@ -584,7 +579,7 @@ class LokLokWiggleDisplay {
           vec4 color = texture2D(posTexture,
             vec2(
               t,
-              lineIDXER / lengthSegments
+              lineIDXER / ${this.sim.NUMBER_OF_SCANS.toFixed(1)}
             )
           );
 
@@ -631,10 +626,10 @@ class LokLokWiggleDisplay {
           vT = t;
 
           vec2 volume = vec2(
-            0.001 *
+            0.003 *
             ${this.invertedScale.toFixed(1)}
             ,
-            0.001 *
+            0.003 *
             ${this.invertedScale.toFixed(1)}
           );
           createTube(t, volume, transformed, objectNormal);
@@ -875,10 +870,10 @@ export class WiggleTracker {
   }
 
   async setup({ node }) {
-    let WIDTH = 32;
-    let HEIGHT = 32;
+    let WIDTH = 1;
+    let HEIGHT = 128;
     let SCAN_COUNT = WIDTH * HEIGHT;
-    let TAIL_LENGTH = 64;
+    let TAIL_LENGTH = 32;
 
     let virtual = new LokLokGravitySimulation({
       node: node,
@@ -889,8 +884,6 @@ export class WiggleTracker {
     let sim = new LokLokHairBallSimulation({
       node,
       virtual,
-      width: WIDTH,
-      height: HEIGHT,
       numberOfScans: SCAN_COUNT,
       trailSize: TAIL_LENGTH,
     });
