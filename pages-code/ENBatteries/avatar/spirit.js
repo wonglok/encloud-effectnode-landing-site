@@ -23,48 +23,48 @@ import { enableBloom } from "../../Bloomer/Bloomer";
 
 export const title = FolderName + ".spirit";
 
-class UI {
-  static async hoverPlane(node) {
-    let raycaster = await node.ready.raycaster;
-    let mouse = await node.ready.mouse;
-    let camera = await node.ready.camera;
-    let scene = await node.ready.scene;
-    let viewport = await node.ready.viewport;
+// class UI {
+//   static async hoverPlane(node) {
+//     let raycaster = await node.ready.raycaster;
+//     let mouse = await node.ready.mouse;
+//     let camera = await node.ready.camera;
+//     let scene = await node.ready.scene;
+//     let viewport = await node.ready.viewport;
 
-    let geoPlane = new PlaneBufferGeometry(
-      3.0 * viewport.width,
-      3.0 * viewport.height,
-      2,
-      2
-    );
+//     let geoPlane = new PlaneBufferGeometry(
+//       3.0 * viewport.width,
+//       3.0 * viewport.height,
+//       2,
+//       2
+//     );
 
-    let matPlane = new MeshBasicMaterial({
-      transparent: true,
-      opacity: 0.25,
-      color: 0xff0000,
-    });
+//     let matPlane = new MeshBasicMaterial({
+//       transparent: true,
+//       opacity: 0.25,
+//       color: 0xff0000,
+//     });
 
-    let planeMesh = new Mesh(geoPlane, matPlane);
-    planeMesh.position.z = -camera.position.z / 2;
+//     let planeMesh = new Mesh(geoPlane, matPlane);
+//     planeMesh.position.z = -camera.position.z / 2;
 
-    scene.add(planeMesh);
-    node.onClean(() => {
-      scene.remove(planeMesh);
-    });
+//     scene.add(planeMesh);
+//     node.onClean(() => {
+//       scene.remove(planeMesh);
+//     });
 
-    let temppos = new Vector3();
-    node.onLoop(() => {
-      planeMesh.lookAt(camera.position);
-      raycaster.setFromCamera(mouse, camera);
-      let res = raycaster.intersectObject(planeMesh);
-      if (res && res[0]) {
-        temppos.copy(res[0].point);
-      }
-    });
+//     let temppos = new Vector3();
+//     node.onLoop(() => {
+//       planeMesh.lookAt(camera.position);
+//       raycaster.setFromCamera(mouse, camera);
+//       let res = raycaster.intersectObject(planeMesh);
+//       if (res && res[0]) {
+//         temppos.copy(res[0].point);
+//       }
+//     });
 
-    return temppos;
-  }
-}
+//     return temppos;
+//   }
+// }
 
 export class LokLokGravitySimulation {
   constructor({ node, width, height }) {
@@ -83,8 +83,10 @@ export class LokLokGravitySimulation {
     let mouse = new Vector3();
     let TrackerTarget = await node.ready.AvaRightHand;
     TrackerTarget.getWorldPosition(mouse);
+    mouse.y += 0.3;
     node.onLoop(() => {
       TrackerTarget.getWorldPosition(mouse);
+      mouse.y += 0.3;
     });
 
     //
@@ -180,6 +182,9 @@ export class LokLokGravitySimulation {
   velShader() {
     return /* glsl */ `
 
+
+
+
       float constrain(float val, float min, float max) {
         if (val < min) {
             return min;
@@ -192,6 +197,7 @@ export class LokLokGravitySimulation {
 
       vec3 getDiff (in vec3 lastPos, in vec3 mousePos) {
         vec3 diff = lastPos - mousePos;
+
         float distance = constrain(length(diff), 15.0, 100.0);
         float strength = 0.635 / (distance * distance);
 
@@ -216,7 +222,7 @@ export class LokLokGravitySimulation {
         vec4 lastPos = texture2D(texPosition, uv);
 
         vec3 diff = getDiff( lastPos.xyz, vec3(mouse) );
-        lastVel.xyz += diff;
+        lastVel.xyz += diff * 3.0;
 
         gl_FragColor = lastVel;
       }
@@ -225,6 +231,7 @@ export class LokLokGravitySimulation {
   }
   posShader() {
     return /* glsl */ `
+
       void main(void)	{
 
         vec2 cellSize = 1.0 / resolution.xy;
@@ -233,7 +240,7 @@ export class LokLokGravitySimulation {
         vec4 lastVel = texture2D( texVelocity, uv );
         vec4 lastPos = texture2D( texPosition, uv );
 
-        lastPos.xyz += lastVel.xyz * 0.1;
+        lastPos.xyz += lastVel.xyz * 0.01;
         gl_FragColor = lastPos;
       }
     `;
@@ -623,9 +630,13 @@ class LokLokWiggleDisplay {
 
           vT = t;
 
-          vec2 volume = vec2(0.005 * ${this.invertedScale.toFixed(
-            1
-          )}, 0.005 * ${this.invertedScale.toFixed(1)});
+          vec2 volume = vec2(
+            0.001 *
+            ${this.invertedScale.toFixed(1)}
+            ,
+            0.001 *
+            ${this.invertedScale.toFixed(1)}
+          );
           createTube(t, volume, transformed, objectNormal);
 
           vec3 transformedNormal = normalMatrix * objectNormal;
@@ -646,14 +657,14 @@ class LokLokWiggleDisplay {
         uniform sampler2D matcap;
         void main (void) {
 
-          vec3 viewDir = normalize( vViewPosition );
-          vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );
-          vec3 y = cross( viewDir, x );
-          vec2 uv = vec2( dot( x, vNormal ), dot( y, vNormal ) ) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
+          // vec3 viewDir = normalize( vViewPosition );
+          // vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );
+          // vec3 y = cross( viewDir, x );
+          // vec2 uv = vec2( dot( x, vNormal ), dot( y, vNormal ) ) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
 
-          vec4 matcapColor = texture2D( matcap, uv );
+          // vec4 matcapColor = texture2D( matcap, uv );
 
-          gl_FragColor = vec4(matcapColor.rgb, (1.0 - vT));
+          gl_FragColor = vec4(vec3(1.0, 0.8, 0.0), (1.0 - vT));
         }
       `,
       transparent: true,
@@ -865,7 +876,7 @@ export class WiggleTracker {
 
   async setup({ node }) {
     let WIDTH = 32;
-    let HEIGHT = 128;
+    let HEIGHT = 32;
     let SCAN_COUNT = WIDTH * HEIGHT;
     let TAIL_LENGTH = 64;
 
