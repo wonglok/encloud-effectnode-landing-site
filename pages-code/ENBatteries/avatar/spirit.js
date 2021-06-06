@@ -199,7 +199,7 @@ export class LokLokGravitySimulation {
         vec3 diff = lastPos - mousePos;
 
         float distance = constrain(length(diff), 15.0, 100.0);
-        float strength = 1.0 / (distance);
+        float strength = 1.0 / pow(distance, 1.1);
 
         diff = normalize(diff);
 
