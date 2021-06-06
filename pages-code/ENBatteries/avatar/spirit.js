@@ -81,12 +81,12 @@ export class LokLokGravitySimulation {
     // let mouse = await UI.hoverPlane(node);
     //
     let mouse = new Vector3();
-    let TrackerTarget = await node.ready.AvaRightHand;
+    let TrackerTarget = await node.ready.AvaHead;
     TrackerTarget.getWorldPosition(mouse);
-    mouse.y += 0.3;
+    mouse.y += 0.4;
     node.onLoop(() => {
       TrackerTarget.getWorldPosition(mouse);
-      mouse.y += 0.3;
+      mouse.y += 0.4;
     });
 
     //
@@ -199,12 +199,12 @@ export class LokLokGravitySimulation {
         vec3 diff = lastPos - mousePos;
 
         float distance = constrain(length(diff), 15.0, 100.0);
-        float strength = 0.635 / (distance * distance);
+        float strength = 1.0 / (distance);
 
         diff = normalize(diff);
 
         // delta
-        diff = diff * strength * -2.0;
+        diff = diff * strength * -1.0;
 
         // diff = diff * strength * (-20.83) * (1.0 / delta) * 0.0183;
         // diff = normalize(diff);
@@ -870,10 +870,10 @@ export class WiggleTracker {
   }
 
   async setup({ node }) {
-    let WIDTH = 1;
+    let WIDTH = 2;
     let HEIGHT = 128;
     let SCAN_COUNT = WIDTH * HEIGHT;
-    let TAIL_LENGTH = 32;
+    let TAIL_LENGTH = 4;
 
     let virtual = new LokLokGravitySimulation({
       node: node,
