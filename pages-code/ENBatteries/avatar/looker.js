@@ -12,24 +12,24 @@ export const effect = async (node) => {
   await node.ready.PreloadDone;
 
   let controls = new OrbitControls(camera, renderer.domElement);
+
+  renderer.domElement.addEventListener(
+    "touchstart",
+    (e) => {
+      e.preventDefault();
+    },
+    { passive: true }
+  );
   //
-  // renderer.domElement.addEventListener(
-  //   "touchstart",
-  //   (e) => {
-  //     e.preventDefault();
-  //   },
-  //   { passive: false }
-  // );
-  // //
-  // renderer.domElement.addEventListener(
-  //   "touchmove",
-  //   (e) => {
-  //     e.preventDefault();
-  //   },
-  //   {
-  //     passive: false,
-  //   }
-  // );
+  renderer.domElement.addEventListener(
+    "touchmove",
+    (e) => {
+      e.preventDefault();
+    },
+    {
+      passive: true,
+    }
+  );
 
   //
   controls.enableDamping = true;
