@@ -181,10 +181,6 @@ export class LokLokGravitySimulation {
 
   velShader() {
     return /* glsl */ `
-
-
-
-
       float constrain(float val, float min, float max) {
         if (val < min) {
             return min;
@@ -198,8 +194,8 @@ export class LokLokGravitySimulation {
       vec3 getDiff (in vec3 lastPos, in vec3 mousePos) {
         vec3 diff = lastPos - mousePos;
 
-        float distance = constrain(length(diff), 15.0, 100.0);
-        float strength = 1.0 / pow(distance, 1.1);
+        float distance = constrain(length(diff), 15.0, 300.0);
+        float strength = 1.0 / pow(distance, 1.5);
 
         diff = normalize(diff);
 
