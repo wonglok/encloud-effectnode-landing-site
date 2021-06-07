@@ -185,14 +185,21 @@ export const effect = async (node) => {
 
     if (item && item.morphTargetDictionary) {
       const obj = {};
+      let skip = false;
       playFaceData({
         onFrame: (object) => {
+          if (skip) {
+            return;
+          }
           for (let kn in object) {
             obj[kn] = object[kn];
           }
           processFace({ mesh: item, object: obj, lerp: 0.2 });
         },
         loop: true,
+      });
+      node.onClean(() => {
+        skip = true;
       });
     }
   });
