@@ -70,19 +70,19 @@ export const title = FolderName + ".spirit";
 
 let makeNodeOrbitor = (node, mounter, radius = 1) => {
   let orbit = new Object3D();
-  // if (mounter) {
-  //   mounter.add(orbit);
-  //   node.onClean(() => {
-  //     mounter.remove(orbit);
-  //   });
-  // }
+  if (mounter) {
+    mounter.add(orbit);
+    node.onClean(() => {
+      mounter.remove(orbit);
+    });
+  }
 
-  node.onLoop(() => {
-    mounter.getWorldPosition(orbit.position);
-  });
+  // node.onLoop(() => {
+  //   mounter.getWorldPosition(orbit.position);
+  // });
 
   node.onLoop((dt) => {
-    orbit.rotation.y += 0.008;
+    orbit.rotation.y += 0.001 * dt;
   });
 
   let orbiting1 = new Object3D();
@@ -137,11 +137,13 @@ export class LokLokGravitySimulation {
 
     let mouse = new Vector3();
     let TrackerTarget = await node.ready.AvaHead;
-    let orbiting = makeNodeOrbitor(node, TrackerTarget, 1.0);
+    let orbiting = makeNodeOrbitor(node, TrackerTarget, 1);
 
     orbiting.getWorldPosition(mouse);
+    mouse.y += 0.1;
     node.onLoop(() => {
       orbiting.getWorldPosition(mouse);
+      mouse.y += 0.1;
     });
 
     this.gpu = new GPUComputationRenderer(this.WIDTH, this.HEIGHT, renderer);
@@ -262,10 +264,10 @@ export class LokLokGravitySimulation {
         vec3 diff = lastPos - mousePos;
 
         float distance = constrain(length(diff), 15.0, 200.0);
-        float strength = 1.0 / pow(distance, 2.0);
+        float strength = 1.36 / pow(distance, 2.0);
 
         diff = normalize(diff);
-        diff = diff * strength * -1.0;
+        diff = diff * pow(strength, 1.0) * -2.0;
 
         return diff;
       }
