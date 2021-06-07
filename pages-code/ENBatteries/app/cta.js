@@ -42,8 +42,10 @@ export const effect = async (node) => {
   welcome.anchorY = "bottom";
   welcome.maxWidth = 3.5;
   welcome.fontSize = 0.2;
-  welcome.font =
-    "https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff";
+  // welcome.font =
+  //   "https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff";
+
+  welcome.font = `/font/Cronos-Pro-Light_12448.ttf`;
   welcome.frustumCulled = false;
   welcome.material.depthTest = false;
   welcome.scale.set(0.75, 0.75, 0.75);
