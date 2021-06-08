@@ -299,6 +299,7 @@ export class LokLokGravitySimulation {
   }
   posShader() {
     return /* glsl */ `
+    // ${curlNoise}
     uniform float dt;
 
       void main(void)	{
@@ -309,6 +310,8 @@ export class LokLokGravitySimulation {
         vec4 lastPos = texture2D( texPosition, uv );
 
         lastPos.xyz += lastVel.xyz * dt;// + normalize(curlNoise(diff)) * 0.0001;
+
+        // lastPos.xyz += curlNoise(lastPos.xyz) * 0.5 * dt;
         gl_FragColor = lastPos;
       }
     `;
@@ -480,6 +483,7 @@ class LokLokHairBallSimulation {
       uniform sampler2D virtualLookup;
       uniform sampler2D virtualPosition;
 
+
 			void main()	{
         // const float width = resolution.x;
         // const float height = resolution.y;
@@ -497,6 +501,7 @@ class LokLokHairBallSimulation {
         if (floor(currentIDX) == 0.0) {
           vec4 uv4 = texture2D(virtualLookup, uvCursor);
           vec4 vp4 = texture2D(virtualPosition, uv4.xy);
+
           gl_FragColor = vec4(vp4.xyz, 1.0);
         } else {
           vec3 positionChain = texture2D( texturePosition,nextUV ).xyz;
@@ -640,7 +645,6 @@ class LokLokWiggleDisplay {
         }
 
 
-        ${curlNoise}
 
 
         vec3 sampleFnc (float t) {
