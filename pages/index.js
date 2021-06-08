@@ -243,12 +243,41 @@ export async function getStaticProps(context) {
   };
 }
 
+export const GA = `UA-46835141-6`;
+
+// log the pageview with their URL
+export const pageview = (url) => {
+  window.gtag("config", GA, {
+    page_path: url,
+  });
+};
+
+// log specific events happening.
+export const event = ({ action, params }) => {
+  window.gtag("event", action, params);
+};
+
 export default function Home({ buildTimeCache }) {
   return (
     <div className={"h-full w-full"}>
       <Head>
-        <title>Your Brand New Site</title>
+        <title>EffectNode</title>
         <link rel="icon" href="/favicon.ico" />
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', '${GA}');
+        `,
+          }}
+        />
       </Head>
 
       <Canvas

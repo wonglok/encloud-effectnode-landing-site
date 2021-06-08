@@ -15,6 +15,7 @@ class LokLokSprite {
     let camera = await node.ready.camera;
     let renderer = await node.ready.gl;
     let viewport = await node.ready.viewport;
+    let SceneDisplayed = await node.ready.SceneDisplayed;
 
     const interactionManager = new InteractionManager(
       renderer,

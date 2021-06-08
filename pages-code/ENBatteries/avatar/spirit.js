@@ -22,51 +22,52 @@ import {
 } from "three";
 import { Geometry } from "three/examples/jsm/deprecated/Geometry.js";
 import { enableBloom } from "../../Bloomer/Bloomer";
+import { curlNoise } from "./curl";
 
 export const title = FolderName + ".spirit";
 
-// class UI {
-//   static async hoverPlane(node) {
-//     let raycaster = await node.ready.raycaster;
-//     let mouse = await node.ready.mouse;
-//     let camera = await node.ready.camera;
-//     let scene = await node.ready.scene;
-//     let viewport = await node.ready.viewport;
+class UI {
+  static async hoverPlane(node) {
+    let raycaster = await node.ready.raycaster;
+    let mouse = await node.ready.mouse;
+    let camera = await node.ready.camera;
+    let scene = await node.ready.scene;
+    let viewport = await node.ready.viewport;
 
-//     let geoPlane = new PlaneBufferGeometry(
-//       3.0 * viewport.width,
-//       3.0 * viewport.height,
-//       2,
-//       2
-//     );
+    let geoPlane = new PlaneBufferGeometry(
+      3.0 * viewport.width,
+      3.0 * viewport.height,
+      2,
+      2
+    );
 
-//     let matPlane = new MeshBasicMaterial({
-//       transparent: true,
-//       opacity: 0.25,
-//       color: 0xff0000,
-//     });
+    let matPlane = new MeshBasicMaterial({
+      transparent: true,
+      opacity: 0.25,
+      color: 0xff0000,
+    });
 
-//     let planeMesh = new Mesh(geoPlane, matPlane);
-//     planeMesh.position.z = -camera.position.z / 2;
+    let planeMesh = new Mesh(geoPlane, matPlane);
+    planeMesh.position.z = -camera.position.z / 2;
 
-//     scene.add(planeMesh);
-//     node.onClean(() => {
-//       scene.remove(planeMesh);
-//     });
+    scene.add(planeMesh);
+    node.onClean(() => {
+      scene.remove(planeMesh);
+    });
 
-//     let temppos = new Vector3();
-//     node.onLoop(() => {
-//       planeMesh.lookAt(camera.position);
-//       raycaster.setFromCamera(mouse, camera);
-//       let res = raycaster.intersectObject(planeMesh);
-//       if (res && res[0]) {
-//         temppos.copy(res[0].point);
-//       }
-//     });
+    let temppos = new Vector3();
+    node.onLoop(() => {
+      planeMesh.lookAt(camera.position);
+      raycaster.setFromCamera(mouse, camera);
+      let res = raycaster.intersectObject(planeMesh);
+      if (res && res[0]) {
+        temppos.copy(res[0].point);
+      }
+    });
 
-//     return temppos;
-//   }
-// }
+    return temppos;
+  }
+}
 
 let makeNodeOrbitor = (node, mounter, radius = 1) => {
   let orbit = new Object3D();
@@ -82,7 +83,7 @@ let makeNodeOrbitor = (node, mounter, radius = 1) => {
   // });
 
   node.onLoop((dt) => {
-    orbit.rotation.y += 0.001 * dt;
+    orbit.rotation.y += 0.01 * dt;
   });
 
   let orbiting1 = new Object3D();
@@ -121,6 +122,23 @@ let makeNodeOrbitor = (node, mounter, radius = 1) => {
   return orbiting1;
 };
 
+class Mouse {
+  static async orbitTrace(node) {
+    let mouse = new Vector3();
+    let TrackerTarget = await node.ready.AvaHead;
+    let orbiting = makeNodeOrbitor(node, TrackerTarget, 1);
+
+    orbiting.getWorldPosition(mouse);
+    mouse.y += 0.1;
+    node.onLoop(() => {
+      orbiting.getWorldPosition(mouse);
+      mouse.y += 0.1;
+    });
+
+    return mouse;
+  }
+}
+
 export class LokLokGravitySimulation {
   constructor({ node, width, height }) {
     this.WIDTH = width;
@@ -135,16 +153,7 @@ export class LokLokGravitySimulation {
 
     // let mouse = await UI.hoverPlane(node);
 
-    let mouse = new Vector3();
-    let TrackerTarget = await node.ready.AvaHead;
-    let orbiting = makeNodeOrbitor(node, TrackerTarget, 1);
-
-    orbiting.getWorldPosition(mouse);
-    mouse.y += 0.1;
-    node.onLoop(() => {
-      orbiting.getWorldPosition(mouse);
-      mouse.y += 0.1;
-    });
+    let mouse = await Mouse.orbitTrace(node);
 
     this.gpu = new GPUComputationRenderer(this.WIDTH, this.HEIGHT, renderer);
     let gpu = this.gpu;
@@ -264,13 +273,14 @@ export class LokLokGravitySimulation {
         vec3 diff = lastPos - mousePos;
 
         float distance = constrain(length(diff), 15.0, 200.0);
-        float strength = 1.36 / pow(distance, 2.0);
+        float strength = 1.0 / pow(distance, 2.0);
 
         diff = normalize(diff);
         diff = diff * pow(strength, 1.0) * -2.0;
 
         return diff;
       }
+
 
       void main(void)	{
         vec2 cellSize = 1.0 / resolution.xy;
@@ -298,7 +308,7 @@ export class LokLokGravitySimulation {
         vec4 lastVel = texture2D( texVelocity, uv );
         vec4 lastPos = texture2D( texPosition, uv );
 
-        lastPos.xyz += lastVel.xyz * 0.01 * dt * 100.0;
+        lastPos.xyz += lastVel.xyz * dt;// + normalize(curlNoise(diff)) * 0.0001;
         gl_FragColor = lastPos;
       }
     `;
@@ -383,8 +393,10 @@ class LokLokHairBallSimulation {
     const lookUpTexture = this.gpu.createTexture();
     const virtualLookUpTexture = this.gpu.createTexture();
 
+    let mouse = await Mouse.orbitTrace(node);
+
     this.fillVirtualLookUpTexture(virtualLookUpTexture);
-    this.fillPositionTexture(dtPosition);
+    this.fillPositionTexture(dtPosition, mouse);
     this.fillLookupTexture(lookUpTexture);
 
     this.positionVariable = this.gpu.addVariable(
@@ -429,6 +441,10 @@ class LokLokHairBallSimulation {
       this.positionUniforms["time"].value = window.performance.now() / 1000;
       this.gpu.compute();
     });
+
+    // setTimeout(() => {
+    //   node.env.set("LineComputed", true);
+    // }, 100);
   }
 
   fillVirtualLookUpTexture(texture) {
@@ -490,16 +506,23 @@ class LokLokHairBallSimulation {
     `;
   }
 
-  fillPositionTexture(texture) {
+  fillPositionTexture(texture, mouse = false) {
     let i = 0;
     const theArray = texture.image.data;
 
     for (let y = 0; y < this.HEIGHT; y++) {
       for (let x = 0; x < this.WIDTH; x++) {
-        theArray[i++] = 0.0;
-        theArray[i++] = 0.0;
-        theArray[i++] = 0.0;
-        theArray[i++] = 0.0;
+        if (mouse) {
+          theArray[i++] = mouse.x;
+          theArray[i++] = mouse.y;
+          theArray[i++] = mouse.z;
+          theArray[i++] = 0.0;
+        } else {
+          theArray[i++] = 0.0;
+          theArray[i++] = 0.0;
+          theArray[i++] = 0.0;
+          theArray[i++] = 0.0;
+        }
       }
     }
     texture.needsUpdate = true;
@@ -617,6 +640,9 @@ class LokLokWiggleDisplay {
         }
 
 
+        ${curlNoise}
+
+
         vec3 sampleFnc (float t) {
           vec3 pt = (offset.xyz + 0.5) * 0.0;
 
@@ -628,8 +654,6 @@ class LokLokWiggleDisplay {
           float lineIDXER = offset.w;
           // pt += getPointAt_0(t);
 
-
-
           vec4 color = texture2D(posTexture,
             vec2(
               t,
@@ -639,6 +663,7 @@ class LokLokWiggleDisplay {
 
           pt += color.rgb;
 
+          // pt += curlNoise(pt) * 0.07;
 
           // pt = getPointAt_2(t);
 
@@ -721,7 +746,7 @@ class LokLokWiggleDisplay {
         }
       `,
       transparent: true,
-      blending: AdditiveBlending,
+      // blending: AdditiveBlending,
     });
 
     let line0 = new Mesh(geometry, matLine0);
@@ -968,6 +993,8 @@ export class WiggleTracker {
 }
 
 export const effect = async (node) => {
+  await node.ready.SceneDisplayed;
+  await node.ready.AvaHead;
   new WiggleTracker({
     node,
   });
